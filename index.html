@@ -301,12 +301,16 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     }
     var temMuffato = (c.itens || []).length > 0;
     var outrasHtml = (c.outrasLojas || []).map(function (o) {
-      var linhas = o.itens.map(function (i) { return "- " + i.item + (i.quantidade ? " (" + i.quantidade + ")" : ""); }).join("\n");
-      var msg = "Olá! Gostaria de fazer um pedido para entrega:\n" + linhas + "\nObrigada!";
+      var nomeLinha = function (i) { return i.produto ? (i.qtd > 1 ? i.qtd + "× " : "") + i.produto : i.item + (i.quantidade ? " (" + i.quantidade + ")" : ""); };
+      var msg = "Olá! Gostaria de fazer um pedido para entrega:\n" + o.itens.map(function (i) { return "- " + nomeLinha(i); }).join("\n") + "\nObrigada!";
       var num = String(o.whatsapp || "").replace(/\D/g, "");
       if (num && num.length <= 11) num = "55" + num;
-      return '<div class="card" style="background:var(--bg)"><h2>Comprar no ' + esc(o.loja) + '</h2><ul class="notes">' +
-        o.itens.map(function (i) { return "<li>" + esc(i.item) + (i.quantidade ? ' <span class="qty">· ' + esc(i.quantidade) + '</span>' : '') + "</li>"; }).join("") + '</ul>' +
+      return '<div class="card" style="background:var(--bg)"><div class="total-row"><h2>Comprar no ' + esc(o.loja) + '</h2>' + (o.total ? '<span class="price">' + brl(o.total) + (o.itens.some(function (i) { return !i.subtotal; }) ? ' <span class="qty">+ itens sem preço no site</span>' : '') + '</span>' : '') + '</div>' +
+        '<ul class="items">' + o.itens.map(function (i) {
+          return '<li' + (i.produto ? ' class="clicavel" data-sku="' + esc((i.link || "").match(/(\d+)$/) ? "lisboa:" + i.link.match(/(\d+)$/)[1] : "") + '"' : '') + '><div>' + esc(i.produto || i.item) +
+            (i.qtd > 1 ? ' <span class="qty">× ' + esc(i.qtd) + '</span>' : '') + (!i.produto && i.quantidade ? ' <span class="qty">· ' + esc(i.quantidade) + '</span>' : '') +
+            '</div><div class="price">' + (i.subtotal ? brl(i.subtotal) : '') + '</div></li>';
+        }).join("") + '</ul>' +
         (num && st !== "paga" ? '<a class="btn ghost" style="text-align:center;text-decoration:none" href="https://wa.me/' + num + '?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">Pedir pelo WhatsApp do ' + esc(o.loja) + '</a><p class="hint">Abre o WhatsApp do mercado com a mensagem pronta. É só conferir e enviar.</p>'
           : st !== "paga" ? '<p class="hint">Compre esses itens no ' + esc(o.loja) + '.</p>' : '') + '</div>';
     }).join("");
@@ -635,6 +639,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   function renderConfig() {
     el("edConfig").innerHTML = '<h2>Ajustes gerais</h2><div class="ed-fields" style="padding:0">' +
       '<label>Valor mínimo para a compra ficar pronta (R$)<input type="text" inputmode="decimal" id="edMinimo" value="' + esc(String(cfg.minimoCompra || 150).replace(".", ",")) + '"></label>' +
+      '<label>Dividir entre mercados só se economizar pelo menos (R$) <span>quando ninguém já vai pedir no outro mercado</span><input type="text" inputmode="decimal" id="edDividir" value="' + esc(String(cfg.economiaMinimaParaDividir || 10).replace(".", ",")) + '"></label>' +
       (cfg.outrasLojas || []).map(function (l, j) {
         return '<label>WhatsApp do ' + esc(l.nome) + ' <span>com DDD, ex.: 43 99999-9999</span><input type="text" inputmode="tel" data-loja="' + j + '" id="ed-zap-' + j + '" value="' + esc(l.whatsapp || "") + '"></label>';
       }).join("") + '</div>';
@@ -642,6 +647,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   function lerConfig() {
     var m = parseFloat(String(el("edMinimo").value).replace(",", "."));
     if (m > 0) cfg.minimoCompra = m;
+    var dv = parseFloat(String(el("edDividir").value).replace(",", "."));
+    if (dv >= 0) cfg.economiaMinimaParaDividir = dv;
     Array.prototype.forEach.call(document.querySelectorAll("[data-loja]"), function (inp) { cfg.outrasLojas[+inp.dataset.loja].whatsapp = inp.value.trim(); });
   }
 

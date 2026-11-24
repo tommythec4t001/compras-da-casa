@@ -252,6 +252,10 @@ if (forcar || !historico[hoje]) {
     for (const d of Object.keys(historico).sort().slice(0, -DIAS_HISTORICO)) delete historico[d];
     await salvarJson("data/historico.json", historico);
     promos.sort((a, b) => (b.desconto || 0) - (a.desconto || 0));
+    // Sem repetidos: fica a primeira ocorrência (a de maior desconto)
+    const ja = new Set();
+    const unicas = promos.filter((pr) => { const k = (pr.loja || "") + "|" + normalizar(pr.nome); if (ja.has(k)) return false; ja.add(k); return true; });
+    promos.length = 0; promos.push(...unicas);
     if (!igual(promos, promosAtuais.itens)) await salvarJson("data/promocoes.json", { atualizadoEm: iso, itens: promos });
     console.log(`Promoções: ${promos.length}.`);
   }
@@ -314,7 +318,7 @@ if (compraAtual.id === idCompra && (compraAtual.criadaEm || "").slice(0, 10) ===
 }
 
 const porNome = new Map(config.itens.map((i) => [normalizar(i.nome).trim(), i]));
-const itensCompra = [], trocas = [], fora = [], faltandoIds = [], outras = {};
+const itensCompra = [], trocas = [], fora = [], faltandoIds = [], outras = {}, decisoes = [];
 const vistos = new Set();
 let economia = 0;
 
@@ -337,7 +341,35 @@ for (const f of faltando) {
     .filter((o) => o.disponivel && o.nome && combina(o.nome, item))
     .map((o) => ({ ...o, cont: conteudo(o.nome, unidade) }))
     .filter((o) => o.cont > 0);
-  const escolha = escolher(item, candidatos);
+  const listaL = await buscarLisboa(String(item.nome).replace(/\(.*?\)/g, "").trim());
+  const candL = (listaL || []).filter((o) => o.nome && o.preco > 0 && o.estoque > 0 && combina(o.nome, item))
+    .map((o) => ({ ...o, sku: "lisboa:" + o.id, cont: conteudo(o.nome, unidade) })).filter((o) => o.cont > 0);
+  decisoes.push({ item, unidade, escM: escolher(item, candidatos), escL: candL.length ? escolher(item, candL) : null });
+}
+
+// Compara os dois mercados: só divide a compra quando a economia compensa
+const ECONOMIA_MIN_DIVIDIR = Number(config.economiaMinimaParaDividir) || 10;
+const unit = (e) => e.valor / e.total;
+for (const d of decisoes) {
+  d.economiaLisboa = d.escM && d.escL ? (unit(d.escM) - unit(d.escL)) * (Number(d.item.alvo) || 1) : d.escL && !d.escM ? Infinity : 0;
+}
+const jaVaiAoLisboa = !!outras["Mercado Lisboa"];
+const ganhos = decisoes.filter((d) => d.economiaLisboa >= 0.5);
+const somaGanhos = ganhos.reduce((s, d) => s + (isFinite(d.economiaLisboa) ? d.economiaLisboa : 0), 0);
+const usarLisboa = jaVaiAoLisboa || somaGanhos >= ECONOMIA_MIN_DIVIDIR || ganhos.some((d) => !isFinite(d.economiaLisboa));
+const fmt = (v) => (Math.round(v * 100) / 100).toString().replace(".", ",");
+const nomeUn = (u) => ({ kg: "kg", l: "L", rolos: "rolos", un: "un" }[u]);
+if (!usarLisboa && somaGanhos > 0) trocas.push(`Mercado Lisboa: sairia ${reais(somaGanhos)} mais barato em alguns itens, mas não compensa dividir a compra (mínimo de ${reais(ECONOMIA_MIN_DIVIDIR)}).`);
+
+for (const d of decisoes) {
+  const { item, unidade } = d;
+  if (usarLisboa && d.economiaLisboa >= 0.5 && d.escL) {
+    const lis = (outras["Mercado Lisboa"] ||= []);
+    for (const { c, q } of d.escL.partes) lis.push({ item: item.nome, produto: c.nome, qtd: q, subtotal: arred(q * c.preco), link: c.link });
+    trocas.push(`${item.nome}: ${isFinite(d.economiaLisboa) ? reais(d.economiaLisboa) + " mais barato" : "só encontrei"} no Mercado Lisboa.`);
+    continue;
+  }
+  const escolha = d.escM;
   if (!escolha) { fora.push(`${item.nome}: não encontrei no Muffato com as regras da lista.`); continue; }
   for (const { c, q } of escolha.partes) {
     const sub = arred(custo(c, q));
@@ -345,8 +377,7 @@ for (const f of faltando) {
     economia += Math.max(0, (c.precoDe > c.preco ? (c.precoDe - c.preco) * q : 0) + (q * c.preco - custo(c, q)));
     itensCompra.push({ item: item.nome, nome: c.nome, sku: c.sku, qtd: q, preco: c.preco, subtotal: sub, promo, imagem: c.imagem });
   }
-  const un = { kg: "kg", l: "L", rolos: "rolos", un: "un" }[unidade];
-  const fmt = (v) => (Math.round(v * 100) / 100).toString().replace(".", ",");
+  const un = nomeUn(unidade);
   if (escolha.partes.length > 1) trocas.push(`${item.nome}: juntei ${escolha.partes.map((p) => p.q + "× " + p.c.nome).join(" + ")} para chegar perto de ${fmt(item.alvo)} ${un}.`);
   else if (escolha.foraDaFaixa || Math.abs(escolha.total / item.alvo - 1) > 0.1) trocas.push(`${item.nome}: o mais próximo de ${fmt(item.alvo)} ${un} foi ${fmt(escolha.total)} ${un}.`);
   if ((item.preferidas || []).length && !escolha.partes.every((p) => item.preferidas.some((w) => temPalavra(p.c.nome, w))))
@@ -363,7 +394,10 @@ const compra = {
   status: total >= minimo || pediuAgora ? "aguardando" : "acumulando",
   criadaEm: iso, minimo, total, frete: null, economia: arred(economia), pediuAgora,
   faltandoIds, itens: itensCompra, trocas, foraDaCompra: fora, linkCarrinho: link,
-  outrasLojas: Object.entries(outras).map(([loja, itens]) => ({ loja, whatsapp: (config.outrasLojas || []).find((l) => l.nome === loja)?.whatsapp || "", itens })),
+  outrasLojas: Object.entries(outras).map(([loja, itens]) => ({
+    loja, whatsapp: (config.outrasLojas || []).find((l) => l.nome === loja)?.whatsapp || "", itens,
+    total: arred(itens.reduce((s, i) => s + (i.subtotal || 0), 0)),
+  })),
 };
 if (!itensCompra.length && compra.outrasLojas.length) compra.status = "aguardando";
 await salvarJson("data/compra.json", compra);
