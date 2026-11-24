@@ -155,11 +155,13 @@ const { data: hoje, iso } = agoraSP();
 const sc = config.salesChannel;
 const forcar = process.env.FORCAR === "1";
 
+const doMuffato = (item) => !item.loja || item.loja === "Super Muffato";
+
 // ---------- 1) Promoções e histórico (uma vez por dia ou quando forçado) ----------
 if (forcar || !historico[hoje]) {
   const precosHoje = {}, imagens = {}, promos = [];
   let falhas = 0;
-  for (const item of config.itens) {
+  for (const item of config.itens.filter(doMuffato)) {
     for (const sku of item.skus || []) {
       const res = await buscar(`fq=skuId:${sku}`, sc);
       if (!res) { falhas++; continue; }
@@ -272,7 +274,7 @@ if (compraAtual.id === idCompra && (compraAtual.criadaEm || "").slice(0, 10) ===
 }
 
 const porNome = new Map(config.itens.map((i) => [normalizar(i.nome).trim(), i]));
-const itensCompra = [], trocas = [], fora = [], faltandoIds = [];
+const itensCompra = [], trocas = [], fora = [], faltandoIds = [], outras = {};
 const vistos = new Set();
 let economia = 0;
 
@@ -283,6 +285,12 @@ for (const f of faltando) {
   vistos.add(chave);
   const item = porNome.get(chave);
   if (!item) { fora.push(`${f.item}: não está na lista-base. Coloque no carrinho à parte.`); continue; }
+  if (!doMuffato(item)) {
+    const marca = (item.marcas || [])[0] ? " " + item.marcas[0].replace(/\b\w/g, (l) => l.toUpperCase()) : "";
+    const medida = { kg: "kg", l: "L", rolos: "rolos", un: "unidades" }[item.unidade || "un"];
+    (outras[item.loja] ||= []).push({ item: item.nome + marca, quantidade: item.alvo ? `${String(item.alvo).replace(".", ",")} ${medida}` : "" });
+    continue;
+  }
   const lista = await buscar(`ft=${encodeURIComponent(item.busca || item.nome)}&_from=0&_to=49`, sc);
   const unidade = item.unidade || "un";
   const candidatos = (lista || []).map(oferta)
@@ -315,6 +323,8 @@ const compra = {
   status: total >= minimo || pediuAgora ? "aguardando" : "acumulando",
   criadaEm: iso, minimo, total, frete: null, economia: arred(economia), pediuAgora,
   faltandoIds, itens: itensCompra, trocas, foraDaCompra: fora, linkCarrinho: link,
+  outrasLojas: Object.entries(outras).map(([loja, itens]) => ({ loja, whatsapp: (config.outrasLojas || []).find((l) => l.nome === loja)?.whatsapp || "", itens })),
 };
+if (!itensCompra.length && compra.outrasLojas.length) compra.status = "aguardando";
 await salvarJson("data/compra.json", compra);
 console.log(`Compra ${compra.status}: ${itensCompra.length} produtos, ${reais(total)}.`);

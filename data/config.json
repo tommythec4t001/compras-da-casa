@@ -30,7 +30,8 @@
       "estocavel": true,
       "skus": [
         "118"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Feijão carioca",
@@ -50,7 +51,8 @@
       "estocavel": true,
       "skus": [
         "315902"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Açúcar",
@@ -73,7 +75,8 @@
       "estocavel": true,
       "skus": [
         "13187"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Óleo de soja",
@@ -92,7 +95,8 @@
       "estocavel": true,
       "skus": [
         "132002"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Macarrão com ovos",
@@ -114,7 +118,8 @@
       "estocavel": true,
       "skus": [
         "579"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Extrato de tomate",
@@ -134,7 +139,8 @@
       ],
       "preferidas": [],
       "estocavel": true,
-      "skus": []
+      "skus": [],
+      "loja": "Mercado Lisboa"
     },
     {
       "nome": "Sal marinho",
@@ -161,7 +167,8 @@
       "estocavel": true,
       "skus": [
         "316475"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Farinha de trigo",
@@ -183,7 +190,8 @@
       "estocavel": true,
       "skus": [
         "123933"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Leite zero lactose",
@@ -210,7 +218,8 @@
       "estocavel": false,
       "skus": [
         "313360"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Manteiga",
@@ -229,7 +238,8 @@
       "estocavel": false,
       "skus": [
         "14208"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Muçarela",
@@ -255,7 +265,8 @@
       "estocavel": false,
       "skus": [
         "274350"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Pão de forma",
@@ -279,7 +290,8 @@
       "estocavel": false,
       "skus": [
         "17580"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Detergente",
@@ -300,7 +312,8 @@
       "estocavel": true,
       "skus": [
         "7916"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Água sanitária",
@@ -319,7 +332,8 @@
       "estocavel": true,
       "skus": [
         "201538"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Esponja",
@@ -344,7 +358,8 @@
       "estocavel": true,
       "skus": [
         "259441"
-      ]
+      ],
+      "loja": "Super Muffato"
     },
     {
       "nome": "Papel higiênico",
@@ -368,10 +383,17 @@
       "skus": [
         "178598",
         "25148"
-      ]
+      ],
+      "loja": "Super Muffato"
     }
   ],
   "avisos": {
     "chavePublica": "BC4DI4PEZ4Kfc1sGQ5dYHxZg-BZlBXnfIyy1fKh-M1bCqWG85X8vmMsImyr_HX3iUdHf20S_TpCMQSF8f9-gKIQ"
-  }
+  },
+  "outrasLojas": [
+    {
+      "nome": "Mercado Lisboa",
+      "whatsapp": ""
+    }
+  ]
 }

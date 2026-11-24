@@ -188,6 +188,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <div class="total-row"><h2 style="font-size:1.4rem">Lista-base</h2><button class="linkbtn" id="edSair">Voltar ao app</button></div>
     <p class="hint">O que você mudar aqui vale para a próxima compra montada e para as promoções do dia seguinte.</p>
     <div id="edToken"></div>
+    <div class="card ed-card" id="edConfig"></div>
     <div id="edLista" class="panel"></div>
     <button class="btn ghost" id="edAdd" type="button">+ Adicionar item</button>
     <div class="ed-actions">
@@ -297,8 +298,21 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         '<p class="hint">Faltam ' + brl(Math.max(0, (c.minimo || 150) - c.total)) + ' para o mínimo de ' + brl(c.minimo || 150) + '. Assim o frete compensa.</p>' +
         (c.pediuAgora ? '' : '<button class="btn ghost" id="btnAgora" type="button">Quero comprar agora</button>');
     }
+    var temMuffato = (c.itens || []).length > 0;
+    var outrasHtml = (c.outrasLojas || []).map(function (o) {
+      var linhas = o.itens.map(function (i) { return "- " + i.item + (i.quantidade ? " (" + i.quantidade + ")" : ""); }).join("\n");
+      var msg = "Olá! Gostaria de fazer um pedido para entrega:\n" + linhas + "\nObrigada!";
+      var num = String(o.whatsapp || "").replace(/\D/g, "");
+      if (num && num.length <= 11) num = "55" + num;
+      return '<div class="card" style="background:var(--bg)"><h2>Comprar no ' + esc(o.loja) + '</h2><ul class="notes">' +
+        o.itens.map(function (i) { return "<li>" + esc(i.item) + (i.quantidade ? ' <span class="qty">· ' + esc(i.quantidade) + '</span>' : '') + "</li>"; }).join("") + '</ul>' +
+        (num && st !== "paga" ? '<a class="btn ghost" style="text-align:center;text-decoration:none" href="https://wa.me/' + num + '?text=' + encodeURIComponent(msg) + '" target="_blank" rel="noopener">Pedir pelo WhatsApp do ' + esc(o.loja) + '</a><p class="hint">Abre o WhatsApp do mercado com a mensagem pronta. É só conferir e enviar.</p>'
+          : st !== "paga" ? '<p class="hint">Compre esses itens no ' + esc(o.loja) + '.</p>' : '') + '</div>';
+    }).join("");
     var acao = "";
-    if (st === "aguardando") {
+    if (st === "aguardando" && !temMuffato) {
+      acao = (SB && c.id ? '<button class="btn ghost" id="btnPaguei" type="button">Já comprei</button>' : '');
+    } else if (st === "aguardando") {
       acao = (c.linkCarrinho ? '<a class="btn" style="text-align:center;text-decoration:none" href="' + esc(c.linkCarrinho) + '" target="_blank" rel="noopener">Colocar tudo no carrinho do Muffato</a>' : '') +
         '<p class="hint">Abre o site do Muffato com a compra no carrinho. Entre na sua conta se pedir, confira, escolha entrega ou retirada e pague.</p>' +
         (SB && c.id ? '<button class="btn ghost" id="btnPaguei" type="button">Já paguei</button>' : '');
@@ -306,10 +320,11 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       acao = '<p class="hint">Compra paga' + (pagas[c.id] ? ' em ' + esc(fmtDate(pagas[c.id])) : '') + '. A próxima aparece aqui quando algo acabar.</p>';
     }
     card.innerHTML =
-      '<div class="total-row"><div><div class="label">Total estimado + frete</div><div class="big">' + brl(c.total) + '</div></div>' + pill + '</div>' +
+      (temMuffato ? '<div class="total-row"><div><div class="label">Total no Muffato (estimado) + frete</div><div class="big">' + brl(c.total) + '</div></div>' + pill + '</div>' : '<div class="total-row"><h2>Compra em outro mercado</h2>' + pill + '</div>') +
       (c.criadaEm ? '<p class="hint">Montada em ' + esc(fmtDate(c.criadaEm)) + (c.economia ? ' · economia com promoções: ' + brl(c.economia) : '') + '</p>' : '') +
       (mudou ? '<p class="aviso">Você mudou a lista do que acabou. A compra é refeita em até 30 minutos.</p>' : '') +
-      topo + '<div><h2>No carrinho</h2><p class="hint" style="margin:2px 0 4px">Toque num produto para ver o preço nos últimos dias.</p><ul class="items">' + itens + '</ul></div>' + lista("Trocas que eu fiz", c.trocas) + lista("Ficou de fora", c.foraDaCompra) + acao;
+      topo + (temMuffato ? '<div><h2>No carrinho do Muffato</h2><p class="hint" style="margin:2px 0 4px">Toque num produto para ver o preço nos últimos dias.</p><ul class="items">' + itens + '</ul></div>' : '') +
+      lista("Trocas que eu fiz", c.trocas) + lista("Ficou de fora", c.foraDaCompra) + outrasHtml + acao;
     var bp = el("btnPaguei");
     if (bp) bp.onclick = function () {
       var caixa = document.createElement("div"); caixa.className = "pagar-box";
@@ -614,11 +629,27 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       '<input type="text" data-i="' + i + '" data-k="' + chave + '" id="ed-' + chave + '-' + i + '" value="' + esc(valor) + '"></label>';
   }
 
+  function renderConfig() {
+    el("edConfig").innerHTML = '<h2>Ajustes gerais</h2><div class="ed-fields" style="padding:0">' +
+      '<label>Valor mínimo para a compra ficar pronta (R$)<input type="text" inputmode="decimal" id="edMinimo" value="' + esc(String(cfg.minimoCompra || 150).replace(".", ",")) + '"></label>' +
+      (cfg.outrasLojas || []).map(function (l, j) {
+        return '<label>WhatsApp do ' + esc(l.nome) + ' <span>com DDD, ex.: 43 99999-9999</span><input type="text" inputmode="tel" data-loja="' + j + '" id="ed-zap-' + j + '" value="' + esc(l.whatsapp || "") + '"></label>';
+      }).join("") + '</div>';
+  }
+  function lerConfig() {
+    var m = parseFloat(String(el("edMinimo").value).replace(",", "."));
+    if (m > 0) cfg.minimoCompra = m;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-loja]"), function (inp) { cfg.outrasLojas[+inp.dataset.loja].whatsapp = inp.value.trim(); });
+  }
+
   function renderLista(abrir) {
     var box = el("edLista");
     box.innerHTML = cfg.itens.map(function (it, i) {
       return '<details class="ed-item"' + (abrir === i ? " open" : "") + '><summary>' + esc(it.nome || "Novo item") + '<small>' + esc(it.quantidade || "") + '</small></summary><div class="ed-fields">' +
         campo(i, "nome", "Item", "", it.nome) +
+        '<label>Onde comprar<select data-i="' + i + '" data-k="loja" id="ed-loja-' + i + '">' +
+        ["Super Muffato"].concat((cfg.outrasLojas || []).map(function (l) { return l.nome; })).map(function (n) { return '<option' + ((it.loja || "Super Muffato") === n ? " selected" : "") + '>' + esc(n) + '</option>'; }).join("") +
+        '</select></label>' +
         campo(i, "quantidade", "Descrição da quantidade", "o que aparece para sua mãe", it.quantidade) +
         '<div class="ed-duo"><label>Quanto comprar<input type="text" inputmode="decimal" data-i="' + i + '" data-k="alvo" id="ed-alvo-' + i + '" value="' + esc(String(it.alvo == null ? "" : it.alvo).replace(".", ",")) + '"></label>' +
         '<label>Medida<select data-i="' + i + '" data-k="unidade" id="ed-unidade-' + i + '">' +
@@ -674,7 +705,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     var st = el("edStatus"), token = lerToken();
     if (!cfg) return;
     if (!token) { st.textContent = "Libere a edição neste aparelho primeiro (quadro acima)."; return; }
-    lerCampos();
+    lerCampos(); lerConfig();
     cfg.itens.forEach(function (it) { if (!it.busca) it.busca = it.nome; });
     var vazios = cfg.itens.filter(function (it) { return !it.nome || !(it.alvo > 0); });
     if (vazios.length) { st.textContent = "Tem item sem nome ou sem “Quanto comprar”. Preencha ou remova antes de salvar."; return; }
@@ -703,7 +734,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     renderToken();
     if (editorAberto && cfg) return;
     el("edLista").innerHTML = '<div class="card"><p class="empty">Carregando a lista…</p></div>';
-    carregar("config.json").then(function (c) { cfg = c; cfg.itens = cfg.itens || []; editorAberto = true; renderLista(); })
+    carregar("config.json").then(function (c) { cfg = c; cfg.itens = cfg.itens || []; cfg.outrasLojas = cfg.outrasLojas || []; editorAberto = true; renderConfig(); renderLista(); })
       .catch(function () { el("edLista").innerHTML = '<div class="card"><p class="empty">Não consegui carregar a lista. Confira a internet.</p></div>'; });
   }
 
