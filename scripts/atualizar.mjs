@@ -292,6 +292,7 @@ if (pagamento && !gastos.some((g) => g.id === compraAtual.id)) {
     id: compraAtual.id, pagaEm: pagamento.criado_em,
     valor: informado > 0 ? arred(informado) : compraAtual.total, estimado: compraAtual.total,
     economia: compraAtual.economia || 0, produtos: (compraAtual.itens || []).length,
+    lojas: [...((compraAtual.itens || []).length ? ["Super Muffato"] : []), ...(compraAtual.outrasLojas || []).map((o) => o.loja)],
   });
   gastos.sort((a, b) => (a.pagaEm < b.pagaEm ? -1 : 1));
   await salvarJson("data/gastos.json", gastos);
