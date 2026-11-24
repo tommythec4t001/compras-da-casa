@@ -1,13 +1,14 @@
 {
-  "atualizadoEm": "2026-11-23T21:53:00-03:00",
+  "atualizadoEm": "2026-11-23T22:09:55-03:00",
   "itens": [
     {
       "nome": "Sal Marinho Fino Integral BR Spices Salt Selection 1kg",
-      "item": "Sal marinho 1 kg",
+      "item": "Sal marinho",
       "preco": 8.24,
       "precoDe": 10.3,
       "desconto": 20,
       "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/396198/7898635644798_1.png?v=638660886837070000",
       "dica": "Não estraga: vale levar até 3."
     },
     {
@@ -17,51 +18,37 @@
       "precoDe": 9.8,
       "desconto": 20,
       "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/441498/1000100467.jpg?v=639270599998770000",
       "dica": ""
     },
     {
-      "nome": "Água Sanitária Qboa 2L",
-      "item": "Água sanitária 5 L",
-      "preco": 5.52,
-      "precoDe": 6.9,
+      "nome": "Água Sanitária Ypê 5 Litros",
+      "item": "Água sanitária",
+      "preco": 13.2,
+      "precoDe": 16.5,
       "desconto": 20,
       "motivo": "lista",
-      "dica": "Não estraga: vale levar até 3."
-    },
-    {
-      "nome": "Água Sanitária Ypê 1L",
-      "item": "Água sanitária 5 L",
-      "preco": 3.52,
-      "precoDe": 4.4,
-      "desconto": 20,
-      "motivo": "lista",
-      "dica": "Não estraga: vale levar até 3."
-    },
-    {
-      "nome": "Água Sanitária Ypê 2 Litros",
-      "item": "Água sanitária 5 L",
-      "preco": 5.76,
-      "precoDe": 7.2,
-      "desconto": 20,
-      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/416637/7896098904664_1.jpg?v=638962271786100000",
       "dica": "Não estraga: vale levar até 3."
     },
     {
       "nome": "Esponja Scotch-Brite Limpeza Pesada 1un",
-      "item": "Esponja Scotch-Brite",
+      "item": "Esponja",
       "preco": 4.96,
       "precoDe": 6.2,
       "desconto": 20,
       "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/365904/7891040001316.jpg?v=638290251963970000",
       "dica": "Não estraga: vale levar até 3."
     },
     {
       "nome": "Esponja Limpeza Extrema Scotch-Brite Antibac Leve 4 Pague 3 Unidades",
-      "item": "Esponja Scotch-Brite",
+      "item": "Esponja",
       "preco": 6.56,
       "precoDe": 8.2,
       "desconto": 20,
       "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/378162/7891040281336.jpg?v=638434288041630000",
       "dica": "Não estraga: vale levar até 3."
     },
     {
@@ -71,6 +58,7 @@
       "precoDe": 9.3,
       "desconto": 15,
       "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/397132/7896002360326_1.jpg?v=638666775064500000",
       "dica": ""
     },
     {
@@ -80,6 +68,7 @@
       "precoDe": 13.4,
       "desconto": 15,
       "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/386304/7896002302197_1.jpg?v=638519989770400000",
       "dica": ""
     }
   ]
