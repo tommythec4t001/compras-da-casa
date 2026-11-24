@@ -25,6 +25,7 @@
   --line: #cfd3c9;
   --hot: #b4472b;
   --hot-soft: #f2dcd3;
+  --chart: #24875a;
   --font-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
   --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
   color-scheme: light;
@@ -32,12 +33,12 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #1b1e1a; --card: #252923; --ink: #e5e8e0; --muted: #a1a89a; --accent: #7cc49d;
-    --accent-soft: #2b4135; --line: #393e36; --hot: #ee9a7e; --hot-soft: #4a2b22; color-scheme: dark;
+    --accent-soft: #2b4135; --line: #393e36; --hot: #ee9a7e; --hot-soft: #4a2b22; --chart: #34ab6e; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #1b1e1a; --card: #252923; --ink: #e5e8e0; --muted: #a1a89a; --accent: #7cc49d;
-  --accent-soft: #2b4135; --line: #393e36; --hot: #ee9a7e; --hot-soft: #4a2b22; color-scheme: dark;
+  --accent-soft: #2b4135; --line: #393e36; --hot: #ee9a7e; --hot-soft: #4a2b22; --chart: #34ab6e; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -120,6 +121,28 @@ input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .aviso { background: var(--hot-soft); color: var(--ink); border-radius: 12px; padding: 10px 12px; font-size: .92rem; }
 .ed-fields select { width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
 .ed-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grafico { display: grid; gap: 6px; }
+.grafico svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.grafico .g-linha { fill: none; stroke: var(--chart); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.grafico .g-area { fill: var(--chart); opacity: .12; }
+.grafico .g-grade { stroke: var(--line); stroke-width: 1; }
+.grafico .g-media { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 4; }
+.grafico .g-txt { fill: var(--muted); font: 500 11px var(--font-body); font-variant-numeric: tabular-nums; }
+.grafico .g-ponto { fill: var(--chart); stroke: var(--card); stroke-width: 2; }
+.grafico .g-mira { stroke: var(--muted); stroke-width: 1; }
+.grafico .g-barra { fill: var(--chart); }
+.grafico .g-barra.fraca { opacity: .45; }
+.g-leitura { font-size: .9rem; font-variant-numeric: tabular-nums; min-height: 1.4em; }
+.btn-mini { justify-self: start; font: inherit; font-size: .88rem; font-weight: 700; color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+ul.items li.clicavel { cursor: pointer; }
+ul.items li .grafico { grid-column: 1 / -1; padding: 6px 0 2px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: grid; gap: 2px; }
+.stat b { font-family: var(--font-display); font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: .8rem; }
+.pagar-box { display: grid; gap: 8px; }
+.pagar-box input { width: 100%; font: inherit; font-size: 1.1rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.is-gastos .tabs, .is-gastos #compra, .is-gastos #promos, .is-gastos #acabou, .is-gastos .foot, .is-gastos #avisosCard { display: none !important; }
 button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: no-preference) { .tab { transition: background .15s, color .15s; } }
 </style>
@@ -179,7 +202,12 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <button class="btn ghost" id="avisosBtn" type="button">Ativar avisos</button>
   </div>
 
-  <p class="foot"><a href="#editar">Editar lista-base</a></p>
+  <section class="panel" id="gastos" hidden aria-label="Gastos no mercado">
+    <div class="total-row"><h2 style="font-size:1.4rem">Gastos no mercado</h2><button class="linkbtn" id="gastosSair" type="button">Voltar ao app</button></div>
+    <div id="gastosConteudo" class="panel"><div class="card"><p class="empty">Carregando…</p></div></div>
+  </section>
+
+  <p class="foot"><a href="#gastos">Gastos</a> · <a href="#editar">Editar lista-base</a></p>
   <p class="status" id="status" aria-live="polite"></p>
 </main>
 
@@ -208,10 +236,13 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   tabs.forEach(function (t) { t.addEventListener("click", function () { show(t.getAttribute("aria-controls")); }); });
   function rota() {
     var h = location.hash;
-    var editando = h === "#editar";
+    var editando = h === "#editar", vendoGastos = h === "#gastos";
     document.body.classList.toggle("is-editing", editando);
+    document.body.classList.toggle("is-gastos", vendoGastos);
     el("editar").hidden = !editando;
+    el("gastos").hidden = !vendoGastos;
     if (editando) { abrirEditor(); window.scrollTo(0, 0); }
+    else if (vendoGastos) { abrirGastos(); window.scrollTo(0, 0); }
     else if (h === "#promos" || h === "#compra" || h === "#acabou") show(h.slice(1));
   }
   window.addEventListener("hashchange", rota);
@@ -252,7 +283,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       : st === "aguardando" ? '<span class="pill wait">Pronta para pagar</span>'
       : '<span class="pill prev">Juntando itens</span>';
     var itens = (c.itens || []).map(function (i) {
-      return '<li><div>' + esc(i.nome) + (i.qtd && i.qtd !== 1 ? ' <span class="qty">× ' + esc(i.qtd) + '</span>' : '') +
+      return '<li' + (i.sku ? ' class="clicavel" data-sku="' + esc(i.sku) + '" title="Ver o preço nos últimos dias"' : '') + '><div>' + esc(i.nome) + (i.qtd && i.qtd !== 1 ? ' <span class="qty">× ' + esc(i.qtd) + '</span>' : '') +
         (i.promo ? ' <span class="hot">🔥 promoção</span>' : '') + '</div><div class="price">' + brl(i.subtotal) + '</div></li>';
     }).join("");
     var lista = function (titulo, arr) { return (arr || []).length ? '<div><h2>' + titulo + '</h2><ul class="notes">' + arr.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul></div>' : ""; };
@@ -278,16 +309,27 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       '<div class="total-row"><div><div class="label">Total estimado + frete</div><div class="big">' + brl(c.total) + '</div></div>' + pill + '</div>' +
       (c.criadaEm ? '<p class="hint">Montada em ' + esc(fmtDate(c.criadaEm)) + (c.economia ? ' · economia com promoções: ' + brl(c.economia) : '') + '</p>' : '') +
       (mudou ? '<p class="aviso">Você mudou a lista do que acabou. A compra é refeita em até 30 minutos.</p>' : '') +
-      topo + '<div><h2>No carrinho</h2><ul class="items">' + itens + '</ul></div>' + lista("Trocas que eu fiz", c.trocas) + lista("Ficou de fora", c.foraDaCompra) + acao;
+      topo + '<div><h2>No carrinho</h2><p class="hint" style="margin:2px 0 4px">Toque num produto para ver o preço nos últimos dias.</p><ul class="items">' + itens + '</ul></div>' + lista("Trocas que eu fiz", c.trocas) + lista("Ficou de fora", c.foraDaCompra) + acao;
     var bp = el("btnPaguei");
     if (bp) bp.onclick = function () {
-      if (bp.dataset.ok !== "1") { bp.dataset.ok = "1"; bp.textContent = "Toque de novo para confirmar"; return; }
-      bp.disabled = true; bp.textContent = "Salvando…";
-      var ids = (c.faltandoIds || []);
-      var p1 = ids.length ? sb("faltando?id=in.(" + ids.join(",") + ")&comprado_em=is.null", { metodo: "PATCH", corpo: { comprado_em: new Date().toISOString() } }) : Promise.resolve();
-      p1.then(function () { return sb("pedidos", { metodo: "POST", corpo: { tipo: "paguei", compra_id: c.id } }); })
-        .then(carregarBanco).then(function () { renderCompra(); renderAcabou(); })
-        .catch(function () { bp.disabled = false; bp.textContent = "Já paguei"; el("status").textContent = "Não consegui salvar. Confira a internet e tente de novo."; });
+      var caixa = document.createElement("div"); caixa.className = "pagar-box";
+      caixa.innerHTML = '<label class="hint" for="valorPago">Quanto deu no total? (com frete; pode deixar o estimado)</label>' +
+        '<input id="valorPago" type="text" inputmode="decimal" value="' + esc(String(c.total.toFixed(2)).replace(".", ",")) + '">' +
+        '<button class="btn" id="btnConfirmaPago" type="button">Confirmar pagamento</button>';
+      bp.replaceWith(caixa);
+      el("btnConfirmaPago").onclick = function () {
+        var b2 = el("btnConfirmaPago"); b2.disabled = true; b2.textContent = "Salvando…";
+        var valor = parseFloat(String(el("valorPago").value).replace(/[^\d,.]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", "."));
+        var ids = (c.faltandoIds || []);
+        var p1 = ids.length ? sb("faltando?id=in.(" + ids.join(",") + ")&comprado_em=is.null", { metodo: "PATCH", corpo: { comprado_em: new Date().toISOString() } }) : Promise.resolve();
+        var registrar = function () {
+          var corpo = { tipo: "paguei", compra_id: c.id };
+          if (valor > 0) corpo.valor = valor;
+          return sb("pedidos", { metodo: "POST", corpo: corpo }).catch(function () { return sb("pedidos", { metodo: "POST", corpo: { tipo: "paguei", compra_id: c.id } }); });
+        };
+        p1.then(registrar).then(carregarBanco).then(function () { renderCompra(); renderAcabou(); })
+          .catch(function () { b2.disabled = false; b2.textContent = "Confirmar pagamento"; el("status").textContent = "Não consegui salvar. Confira a internet e tente de novo."; });
+      };
     };
     var ba = el("btnAgora");
     if (ba) ba.onclick = function () {
@@ -298,6 +340,112 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     };
   }
 
+
+
+  // ---------- Gráficos de preço ----------
+  var historico = null;
+  function carregarHistorico() { return historico ? Promise.resolve(historico) : carregar("historico.json").then(function (h) { historico = h; return h; }); }
+  var dataCurta = function (d) { return d.slice(8, 10) + "/" + d.slice(5, 7); };
+  function graficoPreco(sku) {
+    var pontos = Object.keys(historico).sort().filter(function (d) { return typeof historico[d][sku] === "number"; }).map(function (d) { return { d: d, v: historico[d][sku] }; });
+    if (pontos.length < 2) return '<div class="grafico"><p class="hint">Ainda juntando o histórico deste produto (' + pontos.length + ' dia registrado). O gráfico aparece a partir do 2º dia.</p></div>';
+    var W = 320, H = 130, L = 46, R = 12, T = 12, B = 24;
+    var vs = pontos.map(function (p) { return p.v; });
+    var min = Math.min.apply(null, vs), max = Math.max.apply(null, vs), media = vs.reduce(function (a, b) { return a + b; }, 0) / vs.length;
+    if (max - min < 0.01) { min -= 1; max += 1; } else { var folga = (max - min) * 0.15; min -= folga; max += folga; }
+    var x = function (i) { return L + (i * (W - L - R)) / (pontos.length - 1); };
+    var y = function (v) { return T + ((max - v) * (H - T - B)) / (max - min); };
+    var linha = pontos.map(function (p, i) { return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.v).toFixed(1); }).join(" ");
+    var area = linha + " L" + x(pontos.length - 1).toFixed(1) + " " + (H - B) + " L" + L + " " + (H - B) + " Z";
+    var ult = pontos[pontos.length - 1], baixo = Math.min.apply(null, vs);
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Preço de ' + dataCurta(pontos[0].d) + ' a ' + dataCurta(ult.d) + ': de ' + brl(baixo) + ' a ' + brl(Math.max.apply(null, vs)) + '">' +
+      '<line class="g-grade" x1="' + L + '" x2="' + (W - R) + '" y1="' + (H - B) + '" y2="' + (H - B) + '"/>' +
+      '<line class="g-media" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(media).toFixed(1) + '" y2="' + y(media).toFixed(1) + '"/>' +
+      '<text class="g-txt" x="' + (L - 6) + '" y="' + (y(media) + 4).toFixed(1) + '" text-anchor="end">média</text>' +
+      '<text class="g-txt" x="' + (L - 6) + '" y="' + (T + 8) + '" text-anchor="end">' + brl(max).replace("R$", "").trim() + '</text>' +
+      '<text class="g-txt" x="' + (L - 6) + '" y="' + (H - B) + '" text-anchor="end">' + brl(min).replace("R$", "").trim() + '</text>' +
+      '<path class="g-area" d="' + area + '"/><path class="g-linha" d="' + linha + '"/>' +
+      '<text class="g-txt" x="' + L + '" y="' + (H - 6) + '">' + dataCurta(pontos[0].d) + '</text>' +
+      '<text class="g-txt" x="' + (W - R) + '" y="' + (H - 6) + '" text-anchor="end">' + dataCurta(ult.d) + '</text>' +
+      '<line class="g-mira" x1="0" x2="0" y1="' + T + '" y2="' + (H - B) + '" visibility="hidden"/>' +
+      '<circle class="g-ponto" r="5" cx="' + x(pontos.length - 1).toFixed(1) + '" cy="' + y(ult.v).toFixed(1) + '"/></svg>';
+    var resumo = 'Hoje ' + brl(ult.v) + ' · média ' + brl(media) + ' · menor ' + brl(baixo);
+    return '<div class="grafico" data-pontos=\'' + esc(JSON.stringify(pontos)) + '\' data-geo="' + [L, R, T, B, W, H, min, max].join(",") + '">' + svg + '<div class="g-leitura" data-resumo="' + esc(resumo) + '">' + esc(resumo) + '</div></div>';
+  }
+  // Toque ou passe o dedo no gráfico para ler o preço de cada dia
+  function lerGrafico(e) {
+    var g = e.target.closest && e.target.closest(".grafico[data-pontos]");
+    if (!g) return;
+    var pts = JSON.parse(g.dataset.pontos), geo = g.dataset.geo.split(",").map(Number);
+    var L = geo[0], R = geo[1], T = geo[2], B = geo[3], W = geo[4], H = geo[5], min = geo[6], max = geo[7];
+    var svg = g.querySelector("svg"), box = svg.getBoundingClientRect();
+    var px = ((e.clientX - box.left) / box.width) * W;
+    var i = Math.max(0, Math.min(pts.length - 1, Math.round(((px - L) / (W - L - R)) * (pts.length - 1))));
+    var cx = L + (i * (W - L - R)) / (pts.length - 1), cy = T + ((max - pts[i].v) * (H - T - B)) / (max - min);
+    var mira = svg.querySelector(".g-mira"), ponto = svg.querySelector(".g-ponto");
+    mira.setAttribute("x1", cx); mira.setAttribute("x2", cx); mira.setAttribute("visibility", "visible");
+    ponto.setAttribute("cx", cx); ponto.setAttribute("cy", cy);
+    g.querySelector(".g-leitura").textContent = dataCurta(pts[i].d) + ": " + brl(pts[i].v);
+  }
+  document.addEventListener("pointermove", lerGrafico);
+  document.addEventListener("pointerdown", lerGrafico);
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest && e.target.closest("[data-grafico]");
+    var li = !btn && e.target.closest && e.target.closest("li.clicavel");
+    if (!btn && !li) return;
+    var alvo = btn || li, sku = alvo.getAttribute(btn ? "data-grafico" : "data-sku");
+    var aberto = alvo.nextElementSibling && alvo.nextElementSibling.classList.contains("grafico") ? alvo.nextElementSibling : (li ? li.querySelector(".grafico") : null);
+    if (aberto) { aberto.remove(); if (btn) btn.textContent = "Ver preço nos últimos dias"; return; }
+    carregarHistorico().then(function () {
+      var tmp = document.createElement("div"); tmp.innerHTML = graficoPreco(sku);
+      if (btn) { btn.after(tmp.firstChild); btn.textContent = "Fechar gráfico"; } else li.appendChild(tmp.firstChild);
+    }).catch(function () { el("status").textContent = "Não consegui carregar o histórico de preços."; });
+  });
+
+  // ---------- Gastos ----------
+  var MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  function abrirGastos() {
+    var box = el("gastosConteudo");
+    carregar("gastos.json").then(function (gs) {
+      gs = gs || [];
+      var agora = new Date(), chaveMes = function (d) { var t = new Date(d); return t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0"); };
+      var meses = [];
+      for (var k = 5; k >= 0; k--) { var d = new Date(agora.getFullYear(), agora.getMonth() - k, 1); meses.push({ chave: d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"), nome: MESES[d.getMonth()], total: 0, n: 0, eco: 0 }); }
+      gs.forEach(function (g) { var m = meses.filter(function (x) { return x.chave === chaveMes(g.pagaEm); })[0]; if (m) { m.total += g.valor; m.n++; m.eco += g.economia || 0; } });
+      var atual = meses[5];
+      var stats = '<div class="stats"><div class="stat"><span>Gasto em ' + atual.nome + '</span><b>' + brl(atual.total) + '</b></div>' +
+        '<div class="stat"><span>Compras</span><b>' + atual.n + '</b></div>' +
+        '<div class="stat"><span>Economia</span><b>' + brl(atual.eco) + '</b></div></div>';
+      if (!gs.length) {
+        box.innerHTML = stats + '<div class="card"><p class="empty">Ainda não há compras pagas registradas. Cada vez que alguém tocar em “Já paguei”, o valor aparece aqui.</p></div>';
+        return;
+      }
+      var W = 320, H = 150, T = 18, B = 22, L = 8, R = 8, larg = (W - L - R) / 6, maxT = Math.max.apply(null, meses.map(function (m) { return m.total; })) || 1;
+      var barras = meses.map(function (m, i) {
+        var h = (m.total / maxT) * (H - T - B), x = L + i * larg + 8, w = larg - 16, y0 = H - B;
+        var r = Math.min(4, h);
+        var caminho = h > 0 ? "M" + x + " " + y0 + " V" + (y0 - h + r) + " Q" + x + " " + (y0 - h) + " " + (x + r) + " " + (y0 - h) + " H" + (x + w - r) + " Q" + (x + w) + " " + (y0 - h) + " " + (x + w) + " " + (y0 - h + r) + " V" + y0 + " Z" : "";
+        return (caminho ? '<path class="g-barra' + (i < 5 ? " fraca" : "") + '" d="' + caminho + '"><title>' + m.nome + ': ' + brl(m.total) + '</title></path>' : '') +
+          '<rect x="' + (L + i * larg) + '" y="0" width="' + larg + '" height="' + H + '" fill="transparent" data-mes="' + i + '"/>' +
+          '<text class="g-txt" x="' + (x + w / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + m.nome + '</text>' +
+          (i === 5 && m.total ? '<text class="g-txt" x="' + (x + w / 2) + '" y="' + (y0 - h - 5) + '" text-anchor="middle">' + brl(m.total).replace("R$", "").trim() + '</text>' : '');
+      }).join("");
+      var lista = gs.slice().reverse().slice(0, 30).map(function (g) {
+        return '<li><div>' + esc(fmtDate(g.pagaEm)) + ' <span class="qty">· ' + esc(g.produtos) + ' produtos' + (g.economia ? ' · economia ' + brl(g.economia) : '') + '</span></div><div class="price">' + brl(g.valor) + '</div></li>';
+      }).join("");
+      box.innerHTML = stats +
+        '<div class="card"><h2>Últimos 6 meses</h2><div class="grafico" id="grafMeses"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Gasto por mês">' +
+        '<line class="g-grade" x1="' + L + '" x2="' + (W - R) + '" y1="' + (H - B) + '" y2="' + (H - B) + '"/>' + barras + '</svg>' +
+        '<div class="g-leitura" id="leituraMeses">Toque num mês para ver o valor.</div></div></div>' +
+        '<div class="card"><h2>Compras pagas</h2><ul class="items">' + lista + '</ul><p class="hint">Valor informado ao tocar em “Já paguei” (ou o estimado, se não foi informado).</p></div>';
+      el("grafMeses").addEventListener("pointerdown", function (e) {
+        var r = e.target.closest("[data-mes]"); if (!r) return;
+        var m = meses[+r.dataset.mes];
+        el("leituraMeses").textContent = m.nome + ": " + brl(m.total) + (m.n ? " em " + m.n + (m.n > 1 ? " compras" : " compra") : "");
+      });
+    }).catch(function () { box.innerHTML = '<div class="card"><p class="empty">Não consegui carregar os gastos. Confira a internet.</p></div>'; });
+  }
+  el("gastosSair").onclick = function () { location.hash = "#compra"; };
 
   // ---------- Avisos (notificações) ----------
   function b64ParaBytes(b64) {
@@ -407,7 +555,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
         (i.desconto ? '<div class="off">-' + esc(i.desconto) + '%</div>' : '<div class="off">🔥</div>') + '</div>' + chip +
         '<div class="price" style="text-align:left">' + brl(i.preco) + (i.precoDe ? ' <span class="was" style="display:inline">' + brl(i.precoDe) + '</span>' : '') + '</div>' +
         (i.condicao ? '<div class="tip"><b>' + esc(i.condicao) + '</b></div>' : '') +
-        (i.dica ? '<div class="tip">💡 ' + esc(i.dica) + '</div>' : '') + '</div></div></div>';
+        (i.dica ? '<div class="tip">💡 ' + esc(i.dica) + '</div>' : '') +
+        (i.sku ? '<button class="btn-mini" type="button" data-grafico="' + esc(i.sku) + '">Ver preço nos últimos dias</button>' : '') + '</div></div></div>';
     }).join("");
   }
 

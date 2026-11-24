@@ -168,6 +168,8 @@ if (forcar || !historico[hoje]) {
     }
     const lista = await buscar(`ft=${encodeURIComponent(item.busca || item.nome)}&_from=0&_to=29`, sc);
     if (!lista) { falhas++; continue; }
+    // Guarda o preço de todo produto que serve para o item (para o gráfico de preços)
+    for (const o of lista.map(oferta)) if (o.disponivel && o.nome && combina(o.nome, item)) precosHoje[o.sku] = o.preco;
     const achados = lista.map(oferta)
       .filter((o) => o.disponivel && o.nome && combina(o.nome, item) && (o.precoDe > o.preco || o.leve))
       .map((o) => {
@@ -181,7 +183,7 @@ if (forcar || !historico[hoje]) {
     for (const o of achados) {
       const media = o.leve && o.leve.pct ? arred(o.preco * (1 - o.leve.pct / 100 / o.leve.n)) : null;
       promos.push({
-        nome: o.nome, item: item.nome,
+        nome: o.nome, item: item.nome, sku: o.sku,
         preco: o.porLeve && media ? media : o.preco,
         precoDe: o.porLeve && media ? o.preco : o.precoDe > o.preco ? o.precoDe : null,
         desconto: o.desconto || null, motivo: "lista", imagem: o.imagem,
@@ -198,7 +200,7 @@ if (forcar || !historico[hoje]) {
     if (anteriores.length < MIN_DIAS_MEDIA) continue;
     const media = anteriores.reduce((a, b) => a + b, 0) / anteriores.length;
     if (hojeP <= media * (1 - QUEDA_MINIMA) && !promos.some((p) => p.item === item.nome && p.preco === hojeP)) {
-      promos.push({ nome: item.nome, item: item.nome, preco: hojeP, precoDe: arred(media), desconto: Math.round((1 - hojeP / media) * 100), motivo: "abaixo_normal", imagem: imagens[sku] || "", dica: (item.estocavel ? "Não estraga: vale levar até 3. " : "") + "Preço comparado com a média dos últimos dias." });
+      promos.push({ nome: item.nome, item: item.nome, preco: hojeP, precoDe: arred(media), desconto: Math.round((1 - hojeP / media) * 100), motivo: "abaixo_normal", sku, imagem: imagens[sku] || "", dica: (item.estocavel ? "Não estraga: vale levar até 3. " : "") + "Preço comparado com a média dos últimos dias." });
     }
   }
   if (falhas > config.itens.length) {
@@ -224,7 +226,8 @@ async function sb(caminho) {
 let faltando, pedidos;
 try {
   faltando = await sb("faltando?select=id,item,observacao,criado_em&comprado_em=is.null&order=id");
-  pedidos = await sb("pedidos?select=tipo,compra_id,criado_em&order=criado_em.desc&limit=200");
+  pedidos = await sb("pedidos?select=tipo,compra_id,criado_em,valor&order=criado_em.desc&limit=200")
+    .catch(() => sb("pedidos?select=tipo,compra_id,criado_em&order=criado_em.desc&limit=200"));
 } catch (e) {
   console.error(`Não consegui ler o Supabase: ${e.message}. Compra não alterada.`);
   process.exit(0);
@@ -233,6 +236,21 @@ try {
 const pagas = new Set(pedidos.filter((p) => p.tipo === "paguei").map((p) => p.compra_id));
 const ultimaPaga = pedidos.find((p) => p.tipo === "paguei")?.criado_em || "";
 const pediuAgora = pedidos.some((p) => p.tipo === "comprar_agora" && p.criado_em > ultimaPaga);
+
+// Registra nos gastos a compra que acabou de ser paga
+const gastos = await lerJson("data/gastos.json", []);
+const pagamento = compraAtual.id && pedidos.find((p) => p.tipo === "paguei" && p.compra_id === compraAtual.id);
+if (pagamento && !gastos.some((g) => g.id === compraAtual.id)) {
+  const informado = Number(pagamento.valor);
+  gastos.push({
+    id: compraAtual.id, pagaEm: pagamento.criado_em,
+    valor: informado > 0 ? arred(informado) : compraAtual.total, estimado: compraAtual.total,
+    economia: compraAtual.economia || 0, produtos: (compraAtual.itens || []).length,
+  });
+  gastos.sort((a, b) => (a.pagaEm < b.pagaEm ? -1 : 1));
+  await salvarJson("data/gastos.json", gastos);
+  console.log(`Gasto registrado: ${reais(gastos[gastos.length - 1].valor)}.`);
+}
 
 if (!faltando.length) {
   // Nada marcado: mantém uma compra montada à mão que ainda não foi paga; senão, fica vazia
