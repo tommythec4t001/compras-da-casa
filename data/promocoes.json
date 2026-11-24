@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-23T22:09:55-03:00",
+  "atualizadoEm": "2026-11-24T03:32:58-03:00",
   "itens": [
     {
       "nome": "Leite Elege UHT Semi Desnatado Sem Lactose 1L",
@@ -13,6 +13,94 @@
       "dica": ""
     },
     {
+      "nome": "Leite UHT Tirol Semidesnatado Zero Lactose 1L",
+      "item": "Leite zero lactose",
+      "preco": 4.34,
+      "precoDe": 6.2,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/341978/7896256601824_99_1_1200_72_RGB.jpg?v=638082604873330000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 4,34 cada)",
+      "dica": ""
+    },
+    {
+      "nome": "Manteiga Président sem Sal 200g",
+      "item": "Manteiga",
+      "preco": 9.24,
+      "precoDe": 13.2,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/337703/7891097001345_10_1_1200_72_RGB.jpg?v=638062093530030000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 9,24 cada)",
+      "dica": ""
+    },
+    {
+      "nome": "Manteiga Président com Sal 200g",
+      "item": "Manteiga",
+      "preco": 9.24,
+      "precoDe": 13.2,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/337699/7891097001338_10_1_1200_72_RGB.jpg?v=638062092228700000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 9,24 cada)",
+      "dica": ""
+    },
+    {
+      "nome": "Manteiga Batavo sem Sal 200g",
+      "item": "Manteiga",
+      "preco": 7.21,
+      "precoDe": 10.3,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/337724/7891097015519_1_1_1200_72_RGB.jpg?v=638062106427930000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 7,21 cada)",
+      "dica": ""
+    },
+    {
+      "nome": "Queijo Mussarela Président Fatiado 150g",
+      "item": "Muçarela",
+      "preco": 6.51,
+      "precoDe": 9.3,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/317852/7898955617526_.jpg?v=637913476632070000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 6,51 cada)",
+      "dica": ""
+    },
+    {
+      "nome": "Queijo Tirol Mussarela Fatiado Zero Lactose 150g",
+      "item": "Muçarela",
+      "preco": 8.19,
+      "precoDe": 11.7,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/243647/7896256604450.jpg?v=636754506676130000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 8,19 cada)",
+      "dica": ""
+    },
+    {
+      "nome": "Queijo Verde Campo Mussarela Lacfree 150g",
+      "item": "Muçarela",
+      "preco": 10.78,
+      "precoDe": 15.4,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/428347/7898205924909.png?v=639088586563600000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 10,78 cada)",
+      "dica": ""
+    },
+    {
+      "nome": "Sal Delizza Refinado Marinho Pacote 1kg",
+      "item": "Sal marinho",
+      "preco": 1.95,
+      "precoDe": 2.6,
+      "desconto": 25,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/427469/7896278102958.jpg?v=639080534358430000",
+      "condicao": "Leve 2: 1 sai com 50% de desconto (média de R$ 1,95 cada)",
+      "dica": "Não estraga: vale levar até 3."
+    },
+    {
       "nome": "Sal Marinho Fino Integral BR Spices Salt Selection 1kg",
       "item": "Sal marinho",
       "preco": 8.24,
@@ -20,17 +108,8 @@
       "desconto": 20,
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/396198/7898635644798_1.png?v=638660886837070000",
+      "condicao": "",
       "dica": "Não estraga: vale levar até 3."
-    },
-    {
-      "nome": "Queijo Kollac Mussarela Muffato Foods Fatiado 160g",
-      "item": "Muçarela",
-      "preco": 7.84,
-      "precoDe": 9.8,
-      "desconto": 20,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/441498/1000100467.jpg?v=639270599998770000",
-      "dica": ""
     },
     {
       "nome": "Água Sanitária Ypê 5 Litros",
@@ -40,6 +119,7 @@
       "desconto": 20,
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/416637/7896098904664_1.jpg?v=638962271786100000",
+      "condicao": "",
       "dica": "Não estraga: vale levar até 3."
     },
     {
@@ -50,6 +130,7 @@
       "desconto": 20,
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/365904/7891040001316.jpg?v=638290251963970000",
+      "condicao": "",
       "dica": "Não estraga: vale levar até 3."
     },
     {
@@ -60,6 +141,7 @@
       "desconto": 20,
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/378162/7891040281336.jpg?v=638434288041630000",
+      "condicao": "",
       "dica": "Não estraga: vale levar até 3."
     },
     {
@@ -70,6 +152,7 @@
       "desconto": 15,
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/397132/7896002360326_1.jpg?v=638666775064500000",
+      "condicao": "",
       "dica": ""
     },
     {
@@ -80,6 +163,29 @@
       "desconto": 15,
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/386304/7896002302197_1.jpg?v=638519989770400000",
+      "condicao": "",
+      "dica": ""
+    },
+    {
+      "nome": "Feijão Delizza Carioca 1Kg",
+      "item": "Feijão carioca",
+      "preco": 8.7,
+      "precoDe": null,
+      "desconto": null,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/435508/7896278102392.jpg?v=639172925133730000",
+      "condicao": "Promoção na compra de 2 ou mais",
+      "dica": "Não estraga: vale levar até 3."
+    },
+    {
+      "nome": "Leite Frimesa Semidesnatado Zero Lactose 1L",
+      "item": "Leite zero lactose",
+      "preco": 8.2,
+      "precoDe": null,
+      "desconto": null,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/420099/7896275960926.jpg?v=638972700213900000",
+      "condicao": "Promoção na compra de 5 ou mais",
       "dica": ""
     }
   ]
