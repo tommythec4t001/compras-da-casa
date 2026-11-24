@@ -427,7 +427,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   function abrirGastos() {
     var box = el("gastosConteudo");
     carregar("gastos.json").then(function (gs) {
-      gs = gs || [];
+      gs = (gs || []).filter(function (g) { return !g.teste; });
       var agora = new Date(), chaveMes = function (d) { var t = new Date(d); return t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0"); };
       var meses = [];
       for (var k = 5; k >= 0; k--) { var d = new Date(agora.getFullYear(), agora.getMonth() - k, 1); meses.push({ chave: d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"), nome: MESES[d.getMonth()], total: 0, n: 0, eco: 0 }); }

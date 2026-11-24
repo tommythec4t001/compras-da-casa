@@ -14,7 +14,7 @@ for (const g of gastos) {
   if (g.planilha) continue;
   const lojas = (g.lojas && g.lojas.length ? g.lojas : ["Super Muffato"]).join(" + ");
   const corpo = {
-    id: g.id, data: dataSP(g.pagaEm), descricao: `Mercado - ${lojas} (app Compras da Casa)`,
+    id: g.id, data: dataSP(g.pagaEm), descricao: g.teste ? "TESTE do app Compras da Casa - pode apagar" : `Mercado - ${lojas} (app Compras da Casa)`,
     categoria: "Supermercados", valor: g.valor, quemPagou: "Andréia", para: "Casa",
   };
   try {

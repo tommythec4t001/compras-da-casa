@@ -6,5 +6,17 @@
     "estimado": 219.84,
     "economia": 20.56,
     "produtos": 16
+  },
+  {
+    "id": "teste-planilha-1",
+    "teste": true,
+    "pagaEm": "2026-11-24T07:45:00Z",
+    "valor": 1.0,
+    "estimado": 1.0,
+    "economia": 0,
+    "produtos": 0,
+    "lojas": [
+      "Super Muffato"
+    ]
   }
 ]
