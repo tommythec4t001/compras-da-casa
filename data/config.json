@@ -15,7 +15,7 @@
     { "nome": "Muçarela", "quantidade": "200 g, semanal (de preferência em pedaço)", "busca": "queijo mussarela", "precisaTer": ["mussarela"], "naoPodeTer": ["pizza", "bufala", "vegetal", "bolinhas", "palito", "light", "ligth"], "marcas": [], "estocavel": false, "skus": ["274350"] },
     { "nome": "Pão de forma", "quantidade": "1 pacote, semanal (Seven Boys ou parecido)", "busca": "pao de forma", "precisaTer": ["pao de forma"], "naoPodeTer": ["integral", "sem gluten", "castanha"], "marcas": [], "estocavel": false, "skus": ["17580"] },
     { "nome": "Detergente", "quantidade": "2 frascos de 500 ml, semanal", "busca": "detergente ype 500ml", "precisaTer": ["detergente", "500ml"], "naoPodeTer": [], "marcas": ["ype"], "estocavel": true, "skus": ["7916"] },
-    { "nome": "Água sanitária", "quantidade": "1 frasco de 5 L, quinzenal", "busca": "agua sanitaria", "precisaTer": ["agua sanitaria"], "naoPodeTer": [], "marcas": [], "estocavel": true, "skus": ["201538"] },
+    { "nome": "Água sanitária", "quantidade": "1 frasco de 5 L, quinzenal", "busca": "agua sanitaria", "precisaTer": ["agua sanitaria", "5l"], "naoPodeTer": [], "marcas": [], "estocavel": true, "skus": ["201538"] },
     { "nome": "Esponja", "quantidade": "4 esponjas, mensal (se faltar, fica sem)", "busca": "esponja scotch brite", "precisaTer": ["esponja"], "naoPodeTer": ["banho", "metalica", "grill", "nao risca"], "marcas": ["scotch"], "estocavel": true, "skus": ["259441"] },
     { "nome": "Papel higiênico", "quantidade": "20 rolos, mensal (melhor preço por rolo)", "busca": "papel higienico folha dupla", "precisaTer": ["papel higienico", "folha dupla"], "naoPodeTer": [], "marcas": ["neve", "mili", "personal"], "estocavel": true, "skus": ["178598", "25148"] }
   ]

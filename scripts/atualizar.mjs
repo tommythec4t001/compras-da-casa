@@ -41,7 +41,7 @@ function oferta(produto) {
 
 // Texto sem acento, minúsculo, com "5 kg" virando "5kg"
 const normalizar = (t) => " " + String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-  .replace(/(\d)\s+(kg|g|ml|l|m|un)\b/g, "$1$2").replace(/\s+/g, " ").trim() + " ";
+  .replace(/(\d)\s*(litros?|lts?)\b/g, "$1l").replace(/(\d)\s+(kg|g|ml|l|m|un)\b/g, "$1$2").replace(/\s+/g, " ").trim() + " ";
 
 // Regras da lista: tudo de "precisaTer", nada de "naoPodeTer" e, se houver, uma das "marcas"
 function combina(nome, item) {
