@@ -112,12 +112,6 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <p class="sub" id="updated">Super Muffato</p>
   </header>
 
-  <div class="card" id="instalar" hidden>
-    <h2>Instale o app no seu iPhone</h2>
-    <p class="hint" id="instalarTexto"></p>
-    <button class="linkbtn" id="instalarFechar" type="button" style="justify-self:start">Agora não</button>
-  </div>
-
   <div class="tabs" role="tablist" aria-label="Seções">
     <button class="tab" role="tab" id="tab-compra" aria-controls="compra" aria-selected="true">Compra</button>
     <button class="tab" role="tab" id="tab-promos" aria-controls="promos" aria-selected="false">Promoções <span class="badge" id="promoCount" hidden>0</span></button>
@@ -197,7 +191,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     }).join("");
     var lista = function (titulo, arr) { return (arr || []).length ? '<div><h2>' + titulo + '</h2><ul class="notes">' + arr.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul></div>' : ""; };
     var action = st === "aguardando"
-      ? '<p class="hint">Abra o app do Muffato, confira o carrinho, escolha entrega ou retirada e finalize o pagamento.</p>'
+      ? (c.linkCarrinho ? '<a class="btn" style="text-align:center;text-decoration:none" href="' + esc(c.linkCarrinho) + '" target="_blank" rel="noopener">Colocar tudo no carrinho do Muffato</a>' : '') +
+        '<p class="hint">O botão abre o site do Muffato com a compra inteira no carrinho. Se pedir, entre na sua conta. Depois é só conferir, escolher entrega ou retirada e pagar.</p>'
       : st === "paga" ? '<p class="hint">Compra paga. A próxima aparece aqui quando a lista encher.</p>'
       : '<p class="hint">Prévia com os preços de hoje.</p>';
     var frete = typeof c.frete === "number" ? (c.frete > 0 ? " + frete de " + brl(c.frete) : " (frete grátis)") : " + frete";
@@ -217,8 +212,9 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       var chip = i.motivo === "abaixo_normal" ? '<span class="chip low">Bem abaixo do preço normal</span>' : '<span class="chip">Da sua lista: ' + esc(i.item || "") + '</span>';
       var img = i.imagem ? '<img class="promo-img" src="' + esc(i.imagem) + '" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'promo-img\'}))">' : '<div class="promo-img" aria-hidden="true"></div>';
       return '<div class="card promo"><div class="promo-row">' + img + '<div class="promo-body"><div class="promo-top"><div class="promo-name">' + esc(i.nome) + '</div>' +
-        (i.desconto ? '<div class="off">-' + esc(i.desconto) + '%</div>' : '') + '</div>' + chip +
+        (i.desconto ? '<div class="off">-' + esc(i.desconto) + '%</div>' : '<div class="off">🔥</div>') + '</div>' + chip +
         '<div class="price" style="text-align:left">' + brl(i.preco) + (i.precoDe ? ' <span class="was" style="display:inline">' + brl(i.precoDe) + '</span>' : '') + '</div>' +
+        (i.condicao ? '<div class="tip"><b>' + esc(i.condicao) + '</b></div>' : '') +
         (i.dica ? '<div class="tip">💡 ' + esc(i.dica) + '</div>' : '') + '</div></div></div>';
     }).join("");
   }
@@ -358,20 +354,6 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   rota();
 
-  // Dica de instalação no iPhone (some quando o app já está instalado)
-  (function () {
-    var ua = navigator.userAgent || "";
-    var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    var instalado = window.navigator.standalone === true || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
-    var fechou = false; try { fechou = localStorage.getItem("cc-instalar-fechado") === "1"; } catch (e) {}
-    if (!ios || instalado || fechou) return;
-    var safari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|Instagram|FBAN|FBAV|WhatsApp/.test(ua);
-    el("instalarTexto").innerHTML = safari
-      ? 'Toque no botão <b>Compartilhar</b> (quadrado com seta para cima; se não aparecer, toque primeiro nos <b>três pontinhos ···</b>), role a lista e escolha <b>Adicionar à Tela de Início</b>.'
-      : 'Este app precisa ser instalado pelo <b>Safari</b>. Copie o link, abra o Safari, cole na barra de endereço e depois use <b>Compartilhar → Adicionar à Tela de Início</b>.';
-    el("instalar").hidden = false;
-    el("instalarFechar").onclick = function () { el("instalar").hidden = true; try { localStorage.setItem("cc-instalar-fechado", "1"); } catch (e) {} };
-  })();
   atualizar();
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") atualizar(); });
   if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js").catch(function () {}); }

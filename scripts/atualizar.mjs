@@ -36,7 +36,22 @@ function oferta(produto) {
   const item = produto.items?.[0];
   const vendedor = item?.sellers?.find((s) => s.sellerDefault) || item?.sellers?.[0];
   const o = vendedor?.commertialOffer || {};
-  return { sku: item?.itemId, nome: produto.productName?.trim(), preco: o.Price, precoDe: o.ListPrice, disponivel: o.AvailableQuantity > 0 && o.Price > 0, imagem: item?.images?.[0]?.imageUrl || "" };
+  return { sku: item?.itemId, nome: produto.productName?.trim(), preco: o.Price, precoDe: o.ListPrice, disponivel: o.AvailableQuantity > 0 && o.Price > 0, imagem: item?.images?.[0]?.imageUrl || "", leve: lerLeve(o) };
+}
+
+// Promoções por quantidade (ex.: "60% Off 2un" = leve 2, 1 sai com 60% de desconto).
+// Elas não aparecem no preço "de/por"; só como "teaser" do produto.
+function lerLeve(o) {
+  const t = (o.PromotionTeasers || [])[0];
+  if (!t) return null;
+  const nome = String(t.Name || "");
+  const minimo = t.Conditions?.MinimumQuantity || 0;
+  const m = nome.match(/(\d+)\s*%\s*off\s*(\d+)\s*un/i);
+  if (m) {
+    const pct = +m[1], n = +m[2];
+    return { pct, n, media: Math.round((pct / n) * 10) / 10, texto: `Leve ${n}: 1 sai com ${pct}% de desconto` };
+  }
+  return minimo > 1 ? { pct: 0, n: minimo, media: 0, texto: `Promoção na compra de ${minimo} ou mais` } : null;
 }
 
 // Texto sem acento, minúsculo, com "5 kg" virando "5kg"
@@ -78,13 +93,25 @@ for (const item of config.itens) {
   if (!lista) { falhas++; continue; }
   const achados = lista
     .map(oferta)
-    .filter((o) => o.disponivel && o.nome && combina(o.nome, item) && o.precoDe > o.preco)
-    .map((o) => ({ ...o, desconto: Math.round((1 - o.preco / o.precoDe) * 100) }))
-    .filter((o) => o.desconto >= 1)
+    .filter((o) => o.disponivel && o.nome && combina(o.nome, item) && (o.precoDe > o.preco || o.leve))
+    .map((o) => {
+      const direto = o.precoDe > o.preco ? (1 - o.preco / o.precoDe) * 100 : 0;
+      const porLeve = o.leve?.media || 0;
+      return { ...o, desconto: Math.round(Math.max(direto, porLeve)), porLeve: porLeve > direto };
+    })
+    .filter((o) => o.desconto >= 1 || o.leve)
     .sort((a, b) => b.desconto - a.desconto)
     .slice(0, MAX_PROMOS_POR_ITEM);
   for (const o of achados) {
-    promos.push({ nome: o.nome, item: item.nome, preco: o.preco, precoDe: o.precoDe, desconto: o.desconto, motivo: "lista", imagem: o.imagem, dica: item.estocavel ? "Não estraga: vale levar até 3." : "" });
+    const media = o.leve && o.leve.pct ? Math.round(o.preco * (1 - o.leve.pct / 100 / o.leve.n) * 100) / 100 : null;
+    promos.push({
+      nome: o.nome, item: item.nome,
+      preco: o.porLeve && media ? media : o.preco,
+      precoDe: o.porLeve && media ? o.preco : o.precoDe > o.preco ? o.precoDe : null,
+      desconto: o.desconto || null, motivo: "lista", imagem: o.imagem,
+      condicao: o.leve ? o.leve.texto + (o.porLeve && media ? ` (média de R$ ${media.toFixed(2).replace(".", ",")} cada)` : "") : "",
+      dica: item.estocavel ? "Não estraga: vale levar até 3." : ""
+    });
   }
 }
 
@@ -113,7 +140,7 @@ historico[hoje] = precosHoje;
 for (const d of Object.keys(historico).sort().slice(0, -DIAS_HISTORICO)) delete historico[d];
 await salvarJson("data/historico.json", historico);
 
-promos.sort((a, b) => b.desconto - a.desconto);
+promos.sort((a, b) => (b.desconto || 0) - (a.desconto || 0));
 await salvarJson("data/promocoes.json", { atualizadoEm: iso, itens: promos });
 
 console.log(`${Object.keys(precosHoje).length} preços salvos, ${promos.length} promoções.`);

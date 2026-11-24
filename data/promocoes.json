@@ -2,6 +2,17 @@
   "atualizadoEm": "2026-11-23T22:09:55-03:00",
   "itens": [
     {
+      "nome": "Leite Elege UHT Semi Desnatado Sem Lactose 1L",
+      "item": "Leite zero lactose",
+      "preco": 3.57,
+      "precoDe": 5.1,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/432992/7891097106958.jpg?v=639142767314600000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 3,57 cada)",
+      "dica": ""
+    },
+    {
       "nome": "Sal Marinho Fino Integral BR Spices Salt Selection 1kg",
       "item": "Sal marinho",
       "preco": 8.24,
