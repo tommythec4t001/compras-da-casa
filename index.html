@@ -143,6 +143,7 @@ ul.items li .grafico { grid-column: 1 / -1; padding: 6px 0 2px; }
 .pagar-box { display: grid; gap: 8px; }
 .pagar-box input { width: 100%; font: inherit; font-size: 1.1rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
 .is-gastos .tabs, .is-gastos #compra, .is-gastos #promos, .is-gastos #acabou, .is-gastos .foot, .is-gastos #avisosCard { display: none !important; }
+.loja-tag { justify-self: start; font-size: .78rem; font-weight: 700; color: var(--muted); }
 button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: no-preference) { .tab { transition: background .15s, color .15s; } }
 </style>
@@ -561,16 +562,18 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     var list = el("promoList"), badge = el("promoCount");
     var itens = (p && p.itens) || [];
     badge.textContent = itens.length; badge.hidden = itens.length === 0;
-    if (p && p.atualizadoEm) el("updated").textContent = "Super Muffato · promoções de " + fmtDate(p.atualizadoEm);
+    if (p && p.atualizadoEm) el("updated").textContent = "Muffato e Mercado Lisboa · promoções de " + fmtDate(p.atualizadoEm);
     if (!itens.length) { list.innerHTML = '<div class="card"><p class="empty">Nenhuma promoção interessante agora. Quando aparecer algo da sua lista, ou bem abaixo do preço normal, aparece aqui.</p></div>'; return; }
     list.innerHTML = itens.map(function (i) {
-      var chip = i.motivo === "abaixo_normal" ? '<span class="chip low">Bem abaixo do preço normal</span>' : '<span class="chip">Da sua lista: ' + esc(i.item || "") + '</span>';
+      var chip = (i.motivo === "abaixo_normal" ? '<span class="chip low">Bem abaixo do preço normal</span>' : '<span class="chip">Da sua lista: ' + esc(i.item || "") + '</span>') +
+        '<span class="loja-tag">' + esc(i.loja || "Super Muffato") + '</span>';
       var img = i.imagem ? '<img class="promo-img" src="' + esc(i.imagem) + '" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'promo-img\'}))">' : '<div class="promo-img" aria-hidden="true"></div>';
       return '<div class="card promo"><div class="promo-row">' + img + '<div class="promo-body"><div class="promo-top"><div class="promo-name">' + esc(i.nome) + '</div>' +
         (i.desconto ? '<div class="off">-' + esc(i.desconto) + '%</div>' : '<div class="off">🔥</div>') + '</div>' + chip +
         '<div class="price" style="text-align:left">' + brl(i.preco) + (i.precoDe ? ' <span class="was" style="display:inline">' + brl(i.precoDe) + '</span>' : '') + '</div>' +
         (i.condicao ? '<div class="tip"><b>' + esc(i.condicao) + '</b></div>' : '') +
         (i.dica ? '<div class="tip">💡 ' + esc(i.dica) + '</div>' : '') +
+        (i.link ? '<a class="btn-mini" style="text-decoration:none" href="' + esc(i.link) + '" target="_blank" rel="noopener">Ver no site do ' + esc(i.loja) + '</a>' : '') +
         (i.sku ? '<button class="btn-mini" type="button" data-grafico="' + esc(i.sku) + '">Ver preço nos últimos dias</button>' : '') + '</div></div></div>';
     }).join("");
   }

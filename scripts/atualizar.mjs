@@ -40,6 +40,25 @@ async function buscar(params, sc) {
   return null;
 }
 
+// ---------- Mercado Lisboa (loja virtual OpenCart; dados vêm no HTML da busca) ----------
+const LISBOA = "https://www.lisboasupermercado.com.br";
+async function buscarLisboa(termo) {
+  const url = `${LISBOA}/index.php?route=product/search&search=${encodeURIComponent(termo)}&limit=100`;
+  try {
+    const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15", Accept: "text/html" } });
+    if (!r.ok) { console.warn(`Lisboa HTTP ${r.status} (${termo})`); return null; }
+    const html = await r.text();
+    const out = [];
+    for (const m of html.matchAll(/const args = \{([\s\S]*?)\};/g)) {
+      const pega = (k) => (m[1].match(new RegExp(`'${k}':\\s*['"]([^'"]*)`)) || [])[1] || "";
+      const num = (t) => parseFloat(String(t).replace(/[^\d.,]/g, "").replace(",", "."));
+      const preco = num(pega("special")) || num(pega("price")), precoDe = num(pega("price"));
+      out.push({ id: pega("product_id"), nome: pega("name").trim(), preco, precoDe, estoque: num(pega("stock")) || 0, imagem: pega("thumb"), link: pega("href") });
+    }
+    return out;
+  } catch (e) { console.warn(`Lisboa falhou (${termo}): ${e.message}`); return null; }
+}
+
 // Promoções por quantidade (ex.: "60% Off 2un" = leve 2, 1 sai com 60% de desconto)
 function lerLeve(o) {
   const t = (o.PromotionTeasers || [])[0];
@@ -194,6 +213,27 @@ if (forcar || !historico[hoje]) {
       });
     }
   }
+  // Promoções e preços do Mercado Lisboa (se o site deixar)
+  let lisboaOk = 0;
+  for (const item of config.itens) {
+    const termo = String(item.nome).replace(/\(.*?\)/g, "").trim();
+    const lista = await buscarLisboa(termo);
+    if (!lista) continue;
+    lisboaOk++;
+    const validos = lista.filter((o) => o.nome && o.preco > 0 && o.estoque > 0 && combina(o.nome, item));
+    for (const o of validos) precosHoje["lisboa:" + o.id] = o.preco;
+    validos.filter((o) => o.precoDe > o.preco)
+      .map((o) => ({ ...o, desconto: Math.round((1 - o.preco / o.precoDe) * 100) }))
+      .filter((o) => o.desconto >= 1)
+      .sort((a, b) => b.desconto - a.desconto).slice(0, MAX_PROMOS_POR_ITEM)
+      .forEach((o) => promos.push({
+        nome: o.nome, item: item.nome, sku: "lisboa:" + o.id, loja: "Mercado Lisboa", link: o.link,
+        preco: o.preco, precoDe: o.precoDe, desconto: o.desconto, motivo: "lista", imagem: o.imagem, condicao: "",
+        dica: item.estocavel ? "Não estraga: vale levar até 3." : "",
+      }));
+  }
+  console.log(`Mercado Lisboa: ${lisboaOk} de ${config.itens.length} buscas funcionaram.`);
+
   const diasAnteriores = Object.keys(historico).filter((d) => d < hoje).sort();
   for (const item of config.itens) for (const sku of item.skus || []) {
     const hojeP = precosHoje[sku];

@@ -45,7 +45,7 @@ if (novas.length && !primeiraVez) {
   const desc = p.desconto ? ` (-${p.desconto}%)` : "";
   mensagens.push({
     titulo: novas.length > 1 ? `${novas.length} promoções novas da sua lista 🔥` : "Promoção da sua lista 🔥",
-    texto: `${p.nome}: ${reais(p.preco)}${desc}` + (novas.length > 1 ? ` e mais ${novas.length - 1}.` : "."),
+    texto: `${p.nome}${p.loja && p.loja !== "Super Muffato" ? " no " + p.loja : ""}: ${reais(p.preco)}${desc}` + (novas.length > 1 ? ` e mais ${novas.length - 1}.` : "."),
     tag: "promo", url: "./#promos",
   });
 }
