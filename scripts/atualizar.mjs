@@ -36,7 +36,21 @@ function oferta(produto) {
   const item = produto.items?.[0];
   const vendedor = item?.sellers?.find((s) => s.sellerDefault) || item?.sellers?.[0];
   const o = vendedor?.commertialOffer || {};
-  return { sku: item?.itemId, nome: produto.productName?.trim(), preco: o.Price, precoDe: o.ListPrice, disponivel: o.AvailableQuantity > 0 && o.Price > 0 };
+  return { sku: item?.itemId, nome: produto.productName?.trim(), preco: o.Price, precoDe: o.ListPrice, disponivel: o.AvailableQuantity > 0 && o.Price > 0, imagem: item?.images?.[0]?.imageUrl || "" };
+}
+
+// Texto sem acento, minúsculo, com "5 kg" virando "5kg"
+const normalizar = (t) => " " + String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+  .replace(/(\d)\s+(kg|g|ml|l|m|un)\b/g, "$1$2").replace(/\s+/g, " ").trim() + " ";
+
+// Regras da lista: tudo de "precisaTer", nada de "naoPodeTer" e, se houver, uma das "marcas"
+function combina(nome, item) {
+  const n = normalizar(nome);
+  const tem = (w) => n.includes(normalizar(w).trim());
+  if ((item.precisaTer || []).some((w) => !tem(w))) return false;
+  if ((item.naoPodeTer || []).some((w) => tem(w))) return false;
+  if ((item.marcas || []).length && !item.marcas.some((w) => tem(w))) return false;
+  return true;
 }
 
 const config = await lerJson("data/config.json");
@@ -45,47 +59,46 @@ const { data: hoje, iso } = agoraSP();
 const sc = config.salesChannel;
 
 const precosHoje = {};
+const imagens = {};
 const promos = [];
 let falhas = 0;
 
 for (const item of config.itens) {
   // Preço dos produtos acompanhados
-  for (const sku of item.skus) {
+  for (const sku of item.skus || []) {
     const res = await buscar(`fq=skuId:${sku}`, sc);
     if (!res) { falhas++; continue; }
     const p = res[0] ? oferta(res[0]) : null;
-    if (p?.disponivel) precosHoje[sku] = p.preco;
+    if (p?.disponivel) { precosHoje[sku] = p.preco; imagens[sku] = p.imagem; }
     else console.warn(`${item.nome}: produto ${sku} indisponível ou fora do site`);
   }
 
   // Alternativas permitidas pela regra da mãe que estejam em promoção
-  const lista = await buscar(`ft=${encodeURIComponent(item.busca)}&_from=0&_to=29`, sc);
+  const lista = await buscar(`ft=${encodeURIComponent(item.busca || item.nome)}&_from=0&_to=29`, sc);
   if (!lista) { falhas++; continue; }
-  const inc = new RegExp(item.incluir, "i");
-  const exc = item.excluir ? new RegExp(item.excluir, "i") : null;
   const achados = lista
     .map(oferta)
-    .filter((o) => o.disponivel && o.nome && inc.test(o.nome) && !(exc && exc.test(o.nome)) && o.precoDe > o.preco)
+    .filter((o) => o.disponivel && o.nome && combina(o.nome, item) && o.precoDe > o.preco)
     .map((o) => ({ ...o, desconto: Math.round((1 - o.preco / o.precoDe) * 100) }))
     .filter((o) => o.desconto >= 1)
     .sort((a, b) => b.desconto - a.desconto)
     .slice(0, MAX_PROMOS_POR_ITEM);
   for (const o of achados) {
-    promos.push({ nome: o.nome, item: item.nome, preco: o.preco, precoDe: o.precoDe, desconto: o.desconto, motivo: "lista", dica: item.estocavel ? "Não estraga: vale levar até 3." : "" });
+    promos.push({ nome: o.nome, item: item.nome, preco: o.preco, precoDe: o.precoDe, desconto: o.desconto, motivo: "lista", imagem: o.imagem, dica: item.estocavel ? "Não estraga: vale levar até 3." : "" });
   }
 }
 
 // Preço bem abaixo do normal (precisa de pelo menos 7 dias de histórico)
 const diasAnteriores = Object.keys(historico).filter((d) => d < hoje).sort();
 for (const item of config.itens) {
-  for (const sku of item.skus) {
+  for (const sku of item.skus || []) {
     const hojeP = precosHoje[sku];
     if (hojeP == null) continue;
     const anteriores = diasAnteriores.map((d) => historico[d][sku]).filter((v) => typeof v === "number");
     if (anteriores.length < MIN_DIAS_MEDIA) continue;
     const media = anteriores.reduce((a, b) => a + b, 0) / anteriores.length;
     if (hojeP <= media * (1 - QUEDA_MINIMA) && !promos.some((p) => p.item === item.nome && p.preco === hojeP)) {
-      promos.push({ nome: item.nome, item: item.nome, preco: hojeP, precoDe: Math.round(media * 100) / 100, desconto: Math.round((1 - hojeP / media) * 100), motivo: "abaixo_normal", dica: (item.estocavel ? "Não estraga: vale levar até 3. " : "") + "Preço comparado com a média dos últimos dias." });
+      promos.push({ nome: item.nome, item: item.nome, preco: hojeP, precoDe: Math.round(media * 100) / 100, desconto: Math.round((1 - hojeP / media) * 100), motivo: "abaixo_normal", imagem: imagens[sku] || "", dica: (item.estocavel ? "Não estraga: vale levar até 3. " : "") + "Preço comparado com a média dos últimos dias." });
     }
   }
 }

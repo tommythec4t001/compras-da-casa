@@ -80,6 +80,27 @@ ul.notes { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
 .tip { font-size: .9rem; color: var(--muted); }
 .empty { text-align: center; color: var(--muted); padding: 26px 12px; }
 .status { text-align: center; color: var(--muted); font-size: .9rem; margin: 0; }
+.promo-img { width: 76px; height: 76px; flex: none; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); object-fit: contain; }
+.promo-row { display: flex; gap: 14px; align-items: flex-start; }
+.promo-body { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.foot { text-align: center; margin: 8px 0 0; }
+.foot a, .linkbtn { color: var(--muted); font-size: .88rem; background: none; border: 0; font: inherit; text-decoration: underline; cursor: pointer; padding: 6px; }
+#editar[hidden], .is-editing .tabs, .is-editing #compra, .is-editing #promos, .is-editing .foot { display: none !important; }
+.ed-item { background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.ed-item > summary { padding: 14px 16px; cursor: pointer; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+.ed-item > summary::-webkit-details-marker { display: none; }
+.ed-item > summary small { color: var(--muted); font-weight: 500; text-align: right; }
+.ed-fields { padding: 0 16px 16px; display: grid; gap: 10px; }
+.ed-fields label { display: grid; gap: 4px; font-size: .88rem; font-weight: 600; }
+.ed-fields label span { color: var(--muted); font-weight: 500; }
+.ed-fields input[type="text"], .ed-card input[type="password"] { width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.ed-check { display: flex !important; grid-template-columns: none !important; align-items: center; gap: 10px !important; }
+.ed-check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.btn.ghost { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+.btn.danger { background: transparent; color: var(--hot); border: 2px solid var(--hot); padding: 10px 14px; font-size: .95rem; }
+.ed-actions { display: grid; gap: 10px; position: sticky; bottom: 0; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); background: var(--bg); }
+.ed-card ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: .92rem; }
+input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: no-preference) { .tab { transition: background .15s, color .15s; } }
 </style>
@@ -108,6 +129,19 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     </div>
   </section>
 
+  <section class="panel" id="editar" hidden aria-label="Editar lista-base">
+    <div class="total-row"><h2 style="font-size:1.4rem">Lista-base</h2><button class="linkbtn" id="edSair">Voltar ao app</button></div>
+    <p class="hint">O que você mudar aqui vale para a busca de promoções a partir da próxima checagem diária.</p>
+    <div id="edToken"></div>
+    <div id="edLista" class="panel"></div>
+    <button class="btn ghost" id="edAdd" type="button">+ Adicionar item</button>
+    <div class="ed-actions">
+      <button class="btn" id="edSalvar" type="button">Salvar lista</button>
+      <p class="status" id="edStatus" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <p class="foot"><a href="#editar">Editar lista-base</a></p>
   <p class="status" id="status" aria-live="polite"></p>
 </main>
 
@@ -134,8 +168,15 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     if (location.hash !== "#" + which) { try { history.replaceState(null, "", "#" + which); } catch (e) {} }
   }
   tabs.forEach(function (t) { t.addEventListener("click", function () { show(t.getAttribute("aria-controls")); }); });
-  if (location.hash === "#promos") show("promos");
-  window.addEventListener("hashchange", function () { if (location.hash === "#promos" || location.hash === "#compra") show(location.hash.slice(1)); });
+  function rota() {
+    var h = location.hash;
+    var editando = h === "#editar";
+    document.body.classList.toggle("is-editing", editando);
+    el("editar").hidden = !editando;
+    if (editando) { abrirEditor(); window.scrollTo(0, 0); }
+    else if (h === "#promos" || h === "#compra") show(h.slice(1));
+  }
+  window.addEventListener("hashchange", rota);
 
   function renderCompra(c) {
     var card = el("compraCard");
@@ -168,10 +209,11 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     if (!itens.length) { list.innerHTML = '<div class="card"><p class="empty">Nenhuma promoção interessante agora. Quando aparecer algo da sua lista, ou bem abaixo do preço normal, aparece aqui.</p></div>'; return; }
     list.innerHTML = itens.map(function (i) {
       var chip = i.motivo === "abaixo_normal" ? '<span class="chip low">Bem abaixo do preço normal</span>' : '<span class="chip">Da sua lista: ' + esc(i.item || "") + '</span>';
-      return '<div class="card promo"><div class="promo-top"><div class="promo-name">' + esc(i.nome) + '</div>' +
+      var img = i.imagem ? '<img class="promo-img" src="' + esc(i.imagem) + '" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'promo-img\'}))">' : '<div class="promo-img" aria-hidden="true"></div>';
+      return '<div class="card promo"><div class="promo-row">' + img + '<div class="promo-body"><div class="promo-top"><div class="promo-name">' + esc(i.nome) + '</div>' +
         (i.desconto ? '<div class="off">-' + esc(i.desconto) + '%</div>' : '') + '</div>' + chip +
         '<div class="price" style="text-align:left">' + brl(i.preco) + (i.precoDe ? ' <span class="was" style="display:inline">' + brl(i.precoDe) + '</span>' : '') + '</div>' +
-        (i.dica ? '<div class="tip">💡 ' + esc(i.dica) + '</div>' : '') + '</div>';
+        (i.dica ? '<div class="tip">💡 ' + esc(i.dica) + '</div>' : '') + '</div></div></div>';
     }).join("");
   }
 
@@ -185,6 +227,130 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     carregar("promocoes.json").then(renderPromos).catch(function () { el("promoList").innerHTML = '<div class="card"><p class="empty">Não consegui carregar as promoções. Confira a internet e tente de novo.</p></div>'; });
   }
 
+
+  // ---------- Editor da lista-base (só para quem tiver o token do GitHub) ----------
+  var REPO = "tommythec4t001/compras-da-casa", ARQ = "data/config.json", CHAVE = "cc-github-token";
+  var cfg = null, editorAberto = false;
+  function lerToken() { try { return localStorage.getItem(CHAVE) || ""; } catch (e) { return ""; } }
+  function gravarToken(t) { try { if (t) localStorage.setItem(CHAVE, t); else localStorage.removeItem(CHAVE); return true; } catch (e) { return false; } }
+  var lista2txt = function (a) { return (a || []).join(", "); };
+  var txt2lista = function (t) { return String(t || "").split(",").map(function (x) { return x.trim(); }).filter(Boolean); };
+
+  function renderToken() {
+    var box = el("edToken");
+    if (lerToken()) {
+      box.innerHTML = '<p class="hint">Este aparelho pode salvar alterações. <button class="linkbtn" id="edEsquecer" type="button">Remover acesso deste aparelho</button></p>';
+      el("edEsquecer").onclick = function () { gravarToken(""); renderToken(); };
+      return;
+    }
+    box.innerHTML = '<div class="card ed-card"><h2>Liberar edição neste aparelho</h2>' +
+      '<p class="hint">Faça isso uma vez, só no seu celular ou computador. Sem isso, dá para ver a lista, mas não salvar.</p>' +
+      '<ol><li>No GitHub: Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.</li>' +
+      '<li>Em "Repository access", escolha só <b>compras-da-casa</b>.</li>' +
+      '<li>Em "Permissions", ponha <b>Contents</b> como <b>Read and write</b>.</li>' +
+      '<li>Gere, copie o código e cole aqui.</li></ol>' +
+      '<input type="password" id="edTokenInput" placeholder="github_pat_…" autocomplete="off">' +
+      '<button class="btn" id="edTokenSalvar" type="button">Liberar edição</button></div>';
+    el("edTokenSalvar").onclick = function () {
+      var t = el("edTokenInput").value.trim();
+      if (!t) return;
+      if (!gravarToken(t)) { el("edStatus").textContent = "Este navegador não deixou guardar o acesso."; return; }
+      renderToken();
+    };
+  }
+
+  function campo(i, chave, rotulo, dica, valor) {
+    return '<label>' + rotulo + (dica ? ' <span>' + dica + '</span>' : '') +
+      '<input type="text" data-i="' + i + '" data-k="' + chave + '" id="ed-' + chave + '-' + i + '" value="' + esc(valor) + '"></label>';
+  }
+
+  function renderLista(abrir) {
+    var box = el("edLista");
+    box.innerHTML = cfg.itens.map(function (it, i) {
+      return '<details class="ed-item"' + (abrir === i ? " open" : "") + '><summary>' + esc(it.nome || "Novo item") + '<small>' + esc(it.quantidade || "") + '</small></summary><div class="ed-fields">' +
+        campo(i, "nome", "Item", "", it.nome) +
+        campo(i, "quantidade", "Quantidade e frequência", "ex.: 2 pacotes de 1 kg, mensal", it.quantidade) +
+        campo(i, "busca", "Pesquisar no Muffato por", "", it.busca) +
+        campo(i, "precisaTer", "O nome precisa ter", "separe por vírgula", lista2txt(it.precisaTer)) +
+        campo(i, "naoPodeTer", "Não pode ter", "separe por vírgula", lista2txt(it.naoPodeTer)) +
+        campo(i, "marcas", "Marcas aceitas", "vazio = qualquer marca", lista2txt(it.marcas)) +
+        '<label class="ed-check"><input type="checkbox" data-i="' + i + '" data-k="estocavel" id="ed-estocavel-' + i + '"' + (it.estocavel ? " checked" : "") + '> Não estraga (pode estocar)</label>' +
+        campo(i, "skus", "Código do produto escolhido", "opcional, eu preencho", lista2txt(it.skus)) +
+        '<button class="btn danger" type="button" data-remover="' + i + '">Remover item</button>' +
+        '</div></details>';
+    }).join("");
+  }
+
+  function lerCampos() {
+    Array.prototype.forEach.call(el("edLista").querySelectorAll("[data-k]"), function (inp) {
+      var it = cfg.itens[+inp.dataset.i], k = inp.dataset.k;
+      if (!it) return;
+      if (k === "estocavel") it[k] = inp.checked;
+      else if (["precisaTer", "naoPodeTer", "marcas", "skus"].indexOf(k) >= 0) it[k] = txt2lista(inp.value).map(function (w) { return k === "skus" ? w : w.toLowerCase(); });
+      else it[k] = inp.value.trim();
+    });
+  }
+
+  el("edLista").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-remover]");
+    if (!b) return;
+    if (b.dataset.confirmar !== "1") { b.dataset.confirmar = "1"; b.textContent = "Toque de novo para remover"; return; }
+    lerCampos();
+    cfg.itens.splice(+b.dataset.remover, 1);
+    renderLista();
+    el("edStatus").textContent = "Item removido. Toque em “Salvar lista” para confirmar.";
+  });
+  el("edLista").addEventListener("input", function (e) {
+    if (e.target.dataset.k === "nome") { var s = e.target.closest("details").querySelector("summary"); s.firstChild.textContent = e.target.value || "Novo item"; }
+  });
+  el("edAdd").onclick = function () {
+    lerCampos();
+    cfg.itens.push({ nome: "", quantidade: "", busca: "", precisaTer: [], naoPodeTer: [], marcas: [], estocavel: false, skus: [] });
+    renderLista(cfg.itens.length - 1);
+    var f = el("ed-nome-" + (cfg.itens.length - 1)); if (f) f.focus();
+  };
+  el("edSair").onclick = function () { location.hash = "#compra"; };
+
+  function paraBase64(t) { return btoa(unescape(encodeURIComponent(t))); }
+
+  el("edSalvar").onclick = async function () {
+    var st = el("edStatus"), token = lerToken();
+    if (!cfg) return;
+    if (!token) { st.textContent = "Libere a edição neste aparelho primeiro (quadro acima)."; return; }
+    lerCampos();
+    cfg.itens.forEach(function (it) { if (!it.busca) it.busca = it.nome; });
+    var vazios = cfg.itens.filter(function (it) { return !it.nome; });
+    if (vazios.length) { st.textContent = "Tem item sem nome. Preencha ou remova antes de salvar."; return; }
+    var b = el("edSalvar"); b.disabled = true; b.textContent = "Salvando…"; st.textContent = "";
+    var api = "https://api.github.com/repos/" + REPO + "/contents/" + ARQ;
+    var cab = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" };
+    try {
+      var atual = await fetch(api + "?ref=main&t=" + Date.now(), { headers: cab, cache: "no-store" });
+      if (atual.status === 401 || atual.status === 403) throw new Error("token");
+      if (!atual.ok) throw new Error("HTTP " + atual.status);
+      var sha = (await atual.json()).sha;
+      var r = await fetch(api, { method: "PUT", headers: cab, body: JSON.stringify({ message: "Lista-base atualizada pelo app", content: paraBase64(JSON.stringify(cfg, null, 2) + "\n"), sha: sha, branch: "main" }) });
+      if (r.status === 401 || r.status === 403) throw new Error("token");
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      st.textContent = "Lista salva. Vale a partir da próxima checagem de promoções.";
+      renderLista();
+    } catch (err) {
+      st.textContent = err.message === "token"
+        ? "O GitHub recusou o acesso. Confira se o token tem Contents com Read and write no compras-da-casa."
+        : "Não consegui salvar (" + err.message + "). Confira a internet e tente de novo.";
+    }
+    b.disabled = false; b.textContent = "Salvar lista";
+  };
+
+  function abrirEditor() {
+    renderToken();
+    if (editorAberto && cfg) return;
+    el("edLista").innerHTML = '<div class="card"><p class="empty">Carregando a lista…</p></div>';
+    carregar("config.json").then(function (c) { cfg = c; cfg.itens = cfg.itens || []; editorAberto = true; renderLista(); })
+      .catch(function () { el("edLista").innerHTML = '<div class="card"><p class="empty">Não consegui carregar a lista. Confira a internet.</p></div>'; });
+  }
+
+  rota();
   atualizar();
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") atualizar(); });
   if ("serviceWorker" in navigator) { navigator.serviceWorker.register("sw.js").catch(function () {}); }
