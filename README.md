@@ -1,8 +1,10 @@
 # Compras da Casa
 
-App de celular (site instalável) com as promoções do Super Muffato que interessam à casa e o resumo da compra pronta para pagar.
+App de celular (site instalável) para as compras da casa no Super Muffato.
 
-- `index.html`: o app. Abra no iPhone pelo Safari e use "Adicionar à Tela de Início".
-- `data/`: lista acompanhada (`config.json`), histórico de preços, promoções e compra atual.
-- `scripts/atualizar.mjs`: confere os preços pela busca pública do site. Não mexe em carrinho nem em conta.
-- `.github/workflows/atualizar.yml`: roda o script todo dia às 9h17 (horário de Londrina).
+- **Acabou**: a família marca o que acabou (fica salvo no Supabase).
+- **Compra**: a cada 30 minutos o GitHub Actions monta a compra com o mais barato de cada item, seguindo as regras da lista-base. Fica "pronta para pagar" quando passa do mínimo (R$ 150) ou com "Quero comprar agora". O botão leva tudo para o carrinho do Muffato; o pagamento é sempre feito pela pessoa.
+- **Promoções**: uma vez por dia, itens da lista em promoção ou bem abaixo do preço normal.
+- **Editar lista-base**: link no fim do app (precisa de um token do GitHub no aparelho).
+
+Arquivos: `index.html` (app), `data/` (lista-base, histórico, promoções, compra), `scripts/atualizar.mjs` (busca pública do Muffato + leitura do Supabase), `.github/workflows/atualizar.yml` (agenda).

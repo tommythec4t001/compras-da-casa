@@ -1,5 +1,5 @@
 // Guarda o app para abrir rápido; os dados sempre vêm da rede quando há internet.
-const CACHE = "compras-v1";
+const CACHE = "compras-v2";
 const APP = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {

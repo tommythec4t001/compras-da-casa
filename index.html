@@ -101,6 +101,25 @@ ul.notes { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
 .ed-actions { display: grid; gap: 10px; position: sticky; bottom: 0; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); background: var(--bg); }
 .ed-card ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: .92rem; }
 input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.tabs { grid-template-columns: repeat(3, 1fr); }
+.tab { padding: 11px 4px; font-size: .95rem; }
+.ac-list { display: grid; gap: 8px; }
+.ac-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; font: inherit; text-align: left; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; cursor: pointer; }
+.ac-row .ac-nome { font-weight: 700; }
+.ac-row .ac-sub { display: block; color: var(--muted); font-size: .85rem; font-weight: 500; }
+.ac-row .ac-btn { flex: none; font-weight: 800; font-size: .9rem; border-radius: 999px; padding: 7px 14px; border: 2px solid var(--accent); color: var(--accent); }
+.ac-row[aria-pressed="true"] { background: var(--hot-soft); border-color: var(--hot); }
+.ac-row[aria-pressed="true"] .ac-btn { background: var(--hot); border-color: var(--hot); color: var(--card); }
+.ac-row:disabled { opacity: .6; }
+.ac-sug { border-color: var(--hot); border-style: dashed; }
+.ac-outro { display: flex; gap: 8px; }
+.ac-outro input { flex: 1; min-width: 0; font: inherit; font-size: 1rem; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.ac-outro .btn { width: auto; padding: 12px 18px; }
+.meter { height: 10px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
+.meter > span { display: block; height: 100%; background: var(--accent); }
+.aviso { background: var(--hot-soft); color: var(--ink); border-radius: 12px; padding: 10px 12px; font-size: .92rem; }
+.ed-fields select { width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.ed-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: no-preference) { .tab { transition: background .15s, color .15s; } }
 </style>
@@ -114,6 +133,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   <div class="tabs" role="tablist" aria-label="Seções">
     <button class="tab" role="tab" id="tab-compra" aria-controls="compra" aria-selected="true">Compra</button>
+    <button class="tab" role="tab" id="tab-acabou" aria-controls="acabou" aria-selected="false">Acabou <span class="badge" id="acabouCount" hidden>0</span></button>
     <button class="tab" role="tab" id="tab-promos" aria-controls="promos" aria-selected="false">Promoções <span class="badge" id="promoCount" hidden>0</span></button>
   </div>
 
@@ -121,6 +141,18 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     <div class="card" id="compraCard">
       <p class="empty">Carregando a compra…</p>
     </div>
+  </section>
+
+  <section class="panel" id="acabou" role="tabpanel" aria-labelledby="tab-acabou" hidden>
+    <p class="hint">Toque no que acabou em casa. A compra é montada sozinha e fica pronta quando passar de <span id="acMinimo">R$ 150</span>.</p>
+    <div id="acSug" class="ac-list"></div>
+    <div id="acLista" class="ac-list"><div class="card"><p class="empty">Carregando…</p></div></div>
+    <div>
+      <h2 style="margin-bottom:8px">Outra coisa</h2>
+      <form class="ac-outro" id="acForm"><input id="acOutro" type="text" maxlength="80" placeholder="Ex.: café, fermento…" aria-label="Outro item que acabou"><button class="btn" type="submit">Anotar</button></form>
+      <p class="hint" style="margin-top:6px">Itens fora da lista aparecem na compra para você colocar no carrinho à parte.</p>
+    </div>
+    <p class="status" id="acStatus" aria-live="polite"></p>
   </section>
 
   <section class="panel" id="promos" role="tabpanel" aria-labelledby="tab-promos" hidden>
@@ -131,7 +163,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   <section class="panel" id="editar" hidden aria-label="Editar lista-base">
     <div class="total-row"><h2 style="font-size:1.4rem">Lista-base</h2><button class="linkbtn" id="edSair">Voltar ao app</button></div>
-    <p class="hint">O que você mudar aqui vale para a busca de promoções a partir da próxima checagem diária.</p>
+    <p class="hint">O que você mudar aqui vale para a próxima compra montada e para as promoções do dia seguinte.</p>
     <div id="edToken"></div>
     <div id="edLista" class="panel"></div>
     <button class="btn ghost" id="edAdd" type="button">+ Adicionar item</button>
@@ -158,7 +190,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   }
 
   // Abas
-  var tabs = [el("tab-compra"), el("tab-promos")];
+  var tabs = [el("tab-compra"), el("tab-acabou"), el("tab-promos")];
   function show(which) {
     tabs.forEach(function (t) {
       var on = t.getAttribute("aria-controls") === which;
@@ -174,33 +206,138 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     document.body.classList.toggle("is-editing", editando);
     el("editar").hidden = !editando;
     if (editando) { abrirEditor(); window.scrollTo(0, 0); }
-    else if (h === "#promos" || h === "#compra") show(h.slice(1));
+    else if (h === "#promos" || h === "#compra" || h === "#acabou") show(h.slice(1));
   }
   window.addEventListener("hashchange", rota);
 
-  function renderCompra(c) {
-    var card = el("compraCard");
-    if (!c || !c.itens) { card.innerHTML = '<p class="empty">Nenhuma compra montada ainda. Quando a lista encher, a compra aparece aqui.</p>'; return; }
-    var st = c.status || "previa";
+  // ---------- Banco de dados (Supabase) ----------
+  var SB = null, compraAtual = null, configApp = null, faltando = [], historicoFalt = [], pagas = {};
+  function sb(caminho, opcoes) {
+    opcoes = opcoes || {};
+    var cab = { apikey: SB.chave, Authorization: "Bearer " + SB.chave, "Content-Type": "application/json" };
+    if (opcoes.retorno) cab.Prefer = "return=representation";
+    return fetch(SB.url + "/rest/v1/" + caminho, { method: opcoes.metodo || "GET", headers: cab, body: opcoes.corpo ? JSON.stringify(opcoes.corpo) : undefined })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.status === 204 ? null : r.text().then(function (t) { return t ? JSON.parse(t) : null; }); });
+  }
+  function carregarBanco() {
+    if (!SB) return Promise.resolve();
+    return Promise.all([
+      sb("faltando?select=id,item,criado_em,comprado_em&order=id.desc&limit=500"),
+      sb("pedidos?select=tipo,compra_id,criado_em&order=criado_em.desc&limit=100")
+    ]).then(function (r) {
+      historicoFalt = r[0] || [];
+      faltando = historicoFalt.filter(function (f) { return !f.comprado_em; });
+      pagas = {}; (r[1] || []).forEach(function (p) { if (p.tipo === "paguei") pagas[p.compra_id] = p.criado_em; });
+      window.__pedidos = r[1] || [];
+    });
+  }
+
+  function renderCompra() {
+    var c = compraAtual, card = el("compraCard");
+    if (!c) return;
+    var st = c.status || "vazia";
+    if (c.id && pagas[c.id]) st = "paga";
+    if (st === "vazia" || (!c.itens && st !== "paga")) {
+      card.innerHTML = '<p class="empty">Nada para comprar agora.<br>Quando algo acabar, marque na aba <b>Acabou</b>.</p>' +
+        (faltando.length ? '<p class="aviso">Você marcou ' + faltando.length + ' item(ns). A compra é montada em até 30 minutos.</p>' : '');
+      return;
+    }
     var pill = st === "paga" ? '<span class="pill ok">Paga</span>'
       : st === "aguardando" ? '<span class="pill wait">Pronta para pagar</span>'
-      : '<span class="pill prev">Prévia</span>';
+      : '<span class="pill prev">Juntando itens</span>';
     var itens = (c.itens || []).map(function (i) {
       return '<li><div>' + esc(i.nome) + (i.qtd && i.qtd !== 1 ? ' <span class="qty">× ' + esc(i.qtd) + '</span>' : '') +
         (i.promo ? ' <span class="hot">🔥 promoção</span>' : '') + '</div><div class="price">' + brl(i.subtotal) + '</div></li>';
     }).join("");
     var lista = function (titulo, arr) { return (arr || []).length ? '<div><h2>' + titulo + '</h2><ul class="notes">' + arr.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + '</ul></div>' : ""; };
-    var action = st === "aguardando"
-      ? (c.linkCarrinho ? '<a class="btn" style="text-align:center;text-decoration:none" href="' + esc(c.linkCarrinho) + '" target="_blank" rel="noopener">Colocar tudo no carrinho do Muffato</a>' : '') +
-        '<p class="hint">O botão abre o site do Muffato com a compra inteira no carrinho. Se pedir, entre na sua conta. Depois é só conferir, escolher entrega ou retirada e pagar.</p>'
-      : st === "paga" ? '<p class="hint">Compra paga. A próxima aparece aqui quando a lista encher.</p>'
-      : '<p class="hint">Prévia com os preços de hoje.</p>';
-    var frete = typeof c.frete === "number" ? (c.frete > 0 ? " + frete de " + brl(c.frete) : " (frete grátis)") : " + frete";
+    var abertos = faltando.map(function (f) { return f.id; }).sort().join(",");
+    var daCompra = (c.faltandoIds || []).slice().sort().join(",");
+    var mudou = SB && st !== "paga" && c.faltandoIds && abertos !== daCompra;
+    var topo = "";
+    if (st === "acumulando") {
+      var pct = Math.min(100, Math.round((c.total / (c.minimo || 150)) * 100));
+      topo = '<div class="meter" aria-hidden="true"><span style="width:' + pct + '%"></span></div>' +
+        '<p class="hint">Faltam ' + brl(Math.max(0, (c.minimo || 150) - c.total)) + ' para o mínimo de ' + brl(c.minimo || 150) + '. Assim o frete compensa.</p>' +
+        (c.pediuAgora ? '' : '<button class="btn ghost" id="btnAgora" type="button">Quero comprar agora</button>');
+    }
+    var acao = "";
+    if (st === "aguardando") {
+      acao = (c.linkCarrinho ? '<a class="btn" style="text-align:center;text-decoration:none" href="' + esc(c.linkCarrinho) + '" target="_blank" rel="noopener">Colocar tudo no carrinho do Muffato</a>' : '') +
+        '<p class="hint">Abre o site do Muffato com a compra no carrinho. Entre na sua conta se pedir, confira, escolha entrega ou retirada e pague.</p>' +
+        (SB && c.id ? '<button class="btn ghost" id="btnPaguei" type="button">Já paguei</button>' : '');
+    } else if (st === "paga") {
+      acao = '<p class="hint">Compra paga' + (pagas[c.id] ? ' em ' + esc(fmtDate(pagas[c.id])) : '') + '. A próxima aparece aqui quando algo acabar.</p>';
+    }
     card.innerHTML =
-      '<div class="total-row"><div><div class="label">Total' + esc(frete) + '</div><div class="big">' + brl(c.total) + '</div></div>' + pill + '</div>' +
+      '<div class="total-row"><div><div class="label">Total estimado + frete</div><div class="big">' + brl(c.total) + '</div></div>' + pill + '</div>' +
       (c.criadaEm ? '<p class="hint">Montada em ' + esc(fmtDate(c.criadaEm)) + (c.economia ? ' · economia com promoções: ' + brl(c.economia) : '') + '</p>' : '') +
-      '<div><h2>No carrinho</h2><ul class="items">' + itens + '</ul></div>' + lista("Trocas que eu fiz", c.trocas) + lista("Ficou de fora", c.foraDaCompra) + action;
+      (mudou ? '<p class="aviso">Você mudou a lista do que acabou. A compra é refeita em até 30 minutos.</p>' : '') +
+      topo + '<div><h2>No carrinho</h2><ul class="items">' + itens + '</ul></div>' + lista("Trocas que eu fiz", c.trocas) + lista("Ficou de fora", c.foraDaCompra) + acao;
+    var bp = el("btnPaguei");
+    if (bp) bp.onclick = function () {
+      if (bp.dataset.ok !== "1") { bp.dataset.ok = "1"; bp.textContent = "Toque de novo para confirmar"; return; }
+      bp.disabled = true; bp.textContent = "Salvando…";
+      var ids = (c.faltandoIds || []);
+      var p1 = ids.length ? sb("faltando?id=in.(" + ids.join(",") + ")&comprado_em=is.null", { metodo: "PATCH", corpo: { comprado_em: new Date().toISOString() } }) : Promise.resolve();
+      p1.then(function () { return sb("pedidos", { metodo: "POST", corpo: { tipo: "paguei", compra_id: c.id } }); })
+        .then(carregarBanco).then(function () { renderCompra(); renderAcabou(); })
+        .catch(function () { bp.disabled = false; bp.textContent = "Já paguei"; el("status").textContent = "Não consegui salvar. Confira a internet e tente de novo."; });
+    };
+    var ba = el("btnAgora");
+    if (ba) ba.onclick = function () {
+      ba.disabled = true; ba.textContent = "Pedindo…";
+      sb("pedidos", { metodo: "POST", corpo: { tipo: "comprar_agora" } })
+        .then(function () { ba.textContent = "Pedido feito: a compra fica pronta em até 30 minutos"; })
+        .catch(function () { ba.disabled = false; ba.textContent = "Quero comprar agora"; el("status").textContent = "Não consegui pedir. Confira a internet."; });
+    };
   }
+
+  // ---------- Aba "Acabou" ----------
+  var normal = function (t) { return String(t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim(); };
+  function renderAcabou() {
+    var badge = el("acabouCount");
+    badge.textContent = faltando.length; badge.hidden = faltando.length === 0;
+    if (!configApp) return;
+    if (!SB) { el("acLista").innerHTML = '<div class="card"><p class="empty">Não consegui conectar ao banco de dados.</p></div>'; return; }
+    el("acMinimo").textContent = brl(configApp.minimoCompra || 150);
+    var marcado = {}; faltando.forEach(function (f) { marcado[normal(f.item)] = f; });
+    var hoje = Date.now(), sug = [];
+    var linha = function (it, extra) {
+      var f = marcado[normal(it.nome)];
+      return '<button type="button" class="ac-row' + (extra || "") + '" data-item="' + esc(it.nome) + '" aria-pressed="' + (f ? "true" : "false") + '">' +
+        '<span><span class="ac-nome">' + esc(it.nome) + '</span><span class="ac-sub">' + esc(f ? "Anotado " + fmtDate(f.criado_em) : (it.quantidade || "")) + '</span></span>' +
+        '<span class="ac-btn">' + (f ? "Acabou ✓" : "Acabou") + '</span></button>';
+    };
+    configApp.itens.forEach(function (it) {
+      if (marcado[normal(it.nome)] || !it.frequenciaDias) return;
+      var ult = historicoFalt.filter(function (f) { return f.comprado_em && normal(f.item) === normal(it.nome); }).map(function (f) { return Date.parse(f.comprado_em); });
+      if (!ult.length) return;
+      if (hoje - Math.max.apply(null, ult) >= it.frequenciaDias * 86400000) sug.push(it);
+    });
+    el("acSug").innerHTML = sug.length ? '<h2>Talvez esteja acabando</h2>' + sug.map(function (it) { return linha(it, " ac-sug"); }).join("") : "";
+    var nomes = {}; configApp.itens.forEach(function (it) { nomes[normal(it.nome)] = 1; });
+    var outros = faltando.filter(function (f) { return !nomes[normal(f.item)]; }).map(function (f) { return { nome: f.item, quantidade: "fora da lista" }; });
+    el("acLista").innerHTML = configApp.itens.concat(outros).map(function (it) { return linha(it); }).join("");
+  }
+  function alternar(nome, botao) {
+    var f = faltando.filter(function (x) { return normal(x.item) === normal(nome); });
+    if (botao) botao.disabled = true;
+    var acao = f.length
+      ? sb("faltando?id=in.(" + f.map(function (x) { return x.id; }).join(",") + ")&comprado_em=is.null", { metodo: "DELETE" })
+      : sb("faltando", { metodo: "POST", corpo: { item: nome } });
+    return acao.then(carregarBanco).then(function () { renderAcabou(); renderCompra(); el("acStatus").textContent = f.length ? "Desmarcado." : "Anotado! A compra é atualizada em até 30 minutos."; })
+      .catch(function () { if (botao) botao.disabled = false; el("acStatus").textContent = "Não consegui salvar. Confira a internet e tente de novo."; });
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".ac-row");
+    if (b) alternar(b.dataset.item, b);
+  });
+  el("acForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = el("acOutro").value.trim();
+    if (!v || !SB) return;
+    alternar(v).then(function () { el("acOutro").value = ""; });
+  });
 
   function renderPromos(p) {
     var list = el("promoList"), badge = el("promoCount");
@@ -225,8 +362,14 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   function atualizar() {
     el("status").textContent = "";
-    carregar("compra.json").then(renderCompra).catch(function () { el("compraCard").innerHTML = '<p class="empty">Não consegui carregar a compra. Confira a internet e tente de novo.</p>'; });
     carregar("promocoes.json").then(renderPromos).catch(function () { el("promoList").innerHTML = '<div class="card"><p class="empty">Não consegui carregar as promoções. Confira a internet e tente de novo.</p></div>'; });
+    carregar("config.json").then(function (cfgApp) {
+      configApp = cfgApp; SB = cfgApp.supabase && cfgApp.supabase.url ? cfgApp.supabase : null;
+      return carregarBanco().catch(function () { el("status").textContent = "Não consegui ler a lista do que acabou. Confira a internet."; });
+    }).then(function () {
+      renderAcabou();
+      return carregar("compra.json").then(function (c) { compraAtual = c; renderCompra(); });
+    }).catch(function () { el("compraCard").innerHTML = '<p class="empty">Não consegui carregar a compra. Confira a internet e tente de novo.</p>'; });
   }
 
 
@@ -271,11 +414,17 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     box.innerHTML = cfg.itens.map(function (it, i) {
       return '<details class="ed-item"' + (abrir === i ? " open" : "") + '><summary>' + esc(it.nome || "Novo item") + '<small>' + esc(it.quantidade || "") + '</small></summary><div class="ed-fields">' +
         campo(i, "nome", "Item", "", it.nome) +
-        campo(i, "quantidade", "Quantidade e frequência", "ex.: 2 pacotes de 1 kg, mensal", it.quantidade) +
+        campo(i, "quantidade", "Descrição da quantidade", "o que aparece para sua mãe", it.quantidade) +
+        '<div class="ed-duo"><label>Quanto comprar<input type="text" inputmode="decimal" data-i="' + i + '" data-k="alvo" id="ed-alvo-' + i + '" value="' + esc(String(it.alvo == null ? "" : it.alvo).replace(".", ",")) + '"></label>' +
+        '<label>Medida<select data-i="' + i + '" data-k="unidade" id="ed-unidade-' + i + '">' +
+        [["kg", "kg"], ["l", "litros"], ["rolos", "rolos"], ["un", "unidades/pacotes"]].map(function (u) { return '<option value="' + u[0] + '"' + ((it.unidade || "un") === u[0] ? " selected" : "") + '>' + u[1] + '</option>'; }).join("") +
+        '</select></label></div>' +
+        campo(i, "frequenciaDias", "Costuma acabar a cada", "dias; usado na sugestão “talvez esteja acabando”", it.frequenciaDias) +
         campo(i, "busca", "Pesquisar no Muffato por", "", it.busca) +
         campo(i, "precisaTer", "O nome precisa ter", "separe por vírgula", lista2txt(it.precisaTer)) +
         campo(i, "naoPodeTer", "Não pode ter", "separe por vírgula", lista2txt(it.naoPodeTer)) +
         campo(i, "marcas", "Marcas aceitas", "vazio = qualquer marca", lista2txt(it.marcas)) +
+        campo(i, "preferidas", "Marca preferida", "escolhida se custar até 10% a mais", lista2txt(it.preferidas)) +
         '<label class="ed-check"><input type="checkbox" data-i="' + i + '" data-k="estocavel" id="ed-estocavel-' + i + '"' + (it.estocavel ? " checked" : "") + '> Não estraga (pode estocar)</label>' +
         campo(i, "skus", "Código do produto escolhido", "opcional, eu preencho", lista2txt(it.skus)) +
         '<button class="btn danger" type="button" data-remover="' + i + '">Remover item</button>' +
@@ -288,7 +437,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
       var it = cfg.itens[+inp.dataset.i], k = inp.dataset.k;
       if (!it) return;
       if (k === "estocavel") it[k] = inp.checked;
-      else if (["precisaTer", "naoPodeTer", "marcas", "skus"].indexOf(k) >= 0) it[k] = txt2lista(inp.value).map(function (w) { return k === "skus" ? w : w.toLowerCase(); });
+      else if (k === "alvo" || k === "frequenciaDias") { var n = parseFloat(String(inp.value).replace(",", ".")); it[k] = isNaN(n) ? null : n; }
+      else if (["precisaTer", "naoPodeTer", "marcas", "preferidas", "skus"].indexOf(k) >= 0) it[k] = txt2lista(inp.value).map(function (w) { return k === "skus" ? w : w.toLowerCase(); });
       else it[k] = inp.value.trim();
     });
   }
@@ -307,7 +457,7 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   });
   el("edAdd").onclick = function () {
     lerCampos();
-    cfg.itens.push({ nome: "", quantidade: "", busca: "", precisaTer: [], naoPodeTer: [], marcas: [], estocavel: false, skus: [] });
+    cfg.itens.push({ nome: "", quantidade: "", alvo: 1, unidade: "un", frequenciaDias: 30, busca: "", precisaTer: [], naoPodeTer: [], marcas: [], preferidas: [], estocavel: false, skus: [] });
     renderLista(cfg.itens.length - 1);
     var f = el("ed-nome-" + (cfg.itens.length - 1)); if (f) f.focus();
   };
@@ -321,8 +471,8 @@ button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
     if (!token) { st.textContent = "Libere a edição neste aparelho primeiro (quadro acima)."; return; }
     lerCampos();
     cfg.itens.forEach(function (it) { if (!it.busca) it.busca = it.nome; });
-    var vazios = cfg.itens.filter(function (it) { return !it.nome; });
-    if (vazios.length) { st.textContent = "Tem item sem nome. Preencha ou remova antes de salvar."; return; }
+    var vazios = cfg.itens.filter(function (it) { return !it.nome || !(it.alvo > 0); });
+    if (vazios.length) { st.textContent = "Tem item sem nome ou sem “Quanto comprar”. Preencha ou remova antes de salvar."; return; }
     var b = el("edSalvar"); b.disabled = true; b.textContent = "Salvando…"; st.textContent = "";
     var api = "https://api.github.com/repos/" + REPO + "/contents/" + ARQ;
     var cab = { Authorization: "Bearer " + token, Accept: "application/vnd.github+json" };

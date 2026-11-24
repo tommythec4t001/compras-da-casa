@@ -1,12 +1,19 @@
-name: Atualizar promoções
+name: Atualizar promoções e compra
 
 on:
   schedule:
-    - cron: "17 12 * * *" # 9h17 em Londrina (UTC-3)
+    # A cada 30 min, das 7h às 22h30 em Londrina (UTC-3).
+    # Promoções: uma vez por dia (primeira rodada). Compra: toda rodada.
+    - cron: "7,37 10-23 * * *"
+    - cron: "7,37 0-1 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: atualizar
+  cancel-in-progress: false
 
 jobs:
   atualizar:
@@ -16,12 +23,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Conferir preços e promoções
+      - name: Conferir promoções e montar a compra
+        env:
+          FORCAR: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: node scripts/atualizar.mjs
       - name: Salvar dados
         run: |
           git config user.name "compras-da-casa-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/
-          git diff --cached --quiet || git commit -m "Promoções de $(TZ=America/Sao_Paulo date +%d/%m/%Y)"
+          git diff --cached --quiet && exit 0
+          git commit -m "Atualização de $(TZ=America/Sao_Paulo date '+%d/%m %H:%M')"
+          git pull --rebase origin main
           git push
