@@ -1,0 +1,27 @@
+name: Atualizar promoções
+
+on:
+  schedule:
+    - cron: "17 12 * * *" # 9h17 em Londrina (UTC-3)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Conferir preços e promoções
+        run: node scripts/atualizar.mjs
+      - name: Salvar dados
+        run: |
+          git config user.name "compras-da-casa-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Promoções de $(TZ=America/Sao_Paulo date +%d/%m/%Y)"
+          git push

@@ -1,0 +1,35 @@
+{
+  "status": "aguardando",
+  "criadaEm": "2026-11-23T20:25:00-03:00",
+  "total": 219.84,
+  "frete": 0.3,
+  "economia": 20.56,
+  "itens": [
+    { "nome": "Arroz Martinelli 5 kg", "qtd": 1, "subtotal": 22.6 },
+    { "nome": "Feijão carioca Delizza 1 kg", "qtd": 1, "subtotal": 8.7 },
+    { "nome": "Açúcar cristal Alto Alegre 5 kg", "qtd": 1, "subtotal": 16.5 },
+    { "nome": "Óleo de soja Leve 900 ml", "qtd": 2, "subtotal": 14.8 },
+    { "nome": "Macarrão Dona Benta com ovos 500 g", "qtd": 3, "subtotal": 10.5 },
+    { "nome": "Sal marinho Delizza 1 kg", "qtd": 1, "subtotal": 2.6 },
+    { "nome": "Farinha de trigo Arapongas 1 kg", "qtd": 5, "subtotal": 20.5 },
+    { "nome": "Leite Elege zero lactose 1 L", "qtd": 10, "subtotal": 35.7, "promo": true },
+    { "nome": "Manteiga Batavo com sal 200 g", "qtd": 1, "subtotal": 10.3 },
+    { "nome": "Muçarela fatiada Kollac 160 g", "qtd": 1, "subtotal": 7.84, "promo": true },
+    { "nome": "Pão de forma Seven Boys 450 g", "qtd": 1, "subtotal": 6.2 },
+    { "nome": "Detergente Ypê neutro 500 ml", "qtd": 2, "subtotal": 5.6 },
+    { "nome": "Água sanitária Ypê 5 L", "qtd": 1, "subtotal": 13.2, "promo": true },
+    { "nome": "Esponja Scotch-Brite (pacote com 4)", "qtd": 1, "subtotal": 8.2 },
+    { "nome": "Papel higiênico Mili folha dupla 16 rolos", "qtd": 1, "subtotal": 26.8 },
+    { "nome": "Papel higiênico Neve folha dupla 4 rolos", "qtd": 1, "subtotal": 9.8 }
+  ],
+  "trocas": [
+    "Leite: 5 das 10 caixas saíram em promoção, por R$ 2,04 cada",
+    "Farinha: 5 pacotes de 1 kg saem mais barato que o de 5 kg",
+    "Muçarela: não tem em pedaço no site; veio a fatiada Kollac 160 g, em promoção",
+    "Açúcar: veio cristal; o refinado só tem em 1 kg e sairia mais caro",
+    "Papel higiênico: Mili 16 + Neve 4 para completar 20 rolos"
+  ],
+  "foraDaCompra": [
+    "Extrato de tomate Cajamar: o Muffato não vende online"
+  ]
+}

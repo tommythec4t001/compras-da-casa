@@ -1,0 +1,22 @@
+{
+  "loja": "Super Muffato",
+  "salesChannel": "15",
+  "itens": [
+    { "nome": "Arroz 5 kg", "skus": ["118"], "busca": "arroz tipo 1 5kg", "incluir": "^arroz.*5 ?kg", "excluir": "arb[oó]rio|integral|parboil|japon|oriental", "estocavel": true },
+    { "nome": "Feijão carioca 1 kg", "skus": ["315902"], "busca": "feijao carioca 1kg", "incluir": "feij[aã]o.*carioca.*1 ?kg", "excluir": "", "estocavel": true },
+    { "nome": "Açúcar 5 kg", "skus": ["13187"], "busca": "acucar 5kg", "incluir": "^a[cç][uú]car.*5 ?kg", "excluir": "org[aâ]nico|demerara|light", "estocavel": true },
+    { "nome": "Óleo de soja 900 ml", "skus": ["132002"], "busca": "oleo de soja 900ml", "incluir": "[oó]leo de soja.*900", "excluir": "", "estocavel": true },
+    { "nome": "Macarrão com ovos 500 g", "skus": ["579"], "busca": "macarrao com ovos 500g", "incluir": "macarr[aã]o.*ovos.*500", "excluir": "instant", "estocavel": true },
+    { "nome": "Extrato de tomate Cajamar", "skus": [], "busca": "extrato de tomate cajamar", "incluir": "cajamar", "excluir": "elefante", "estocavel": true },
+    { "nome": "Sal marinho 1 kg", "skus": ["316475"], "busca": "sal marinho", "incluir": "^sal .*(marinho|iodado).*1 ?kg", "excluir": "grosso|rosa|churrasco|moedor", "estocavel": true },
+    { "nome": "Farinha de trigo", "skus": ["123933"], "busca": "farinha de trigo", "incluir": "^farinha de trigo", "excluir": "integral|premium|gourmet", "estocavel": true },
+    { "nome": "Leite zero lactose 1 L", "skus": ["313360"], "busca": "leite zero lactose 1l", "incluir": "^leite.*(zero|sem) lactose.*1 ?l", "excluir": "p[oó] |condensado|creme|fermentado", "estocavel": false },
+    { "nome": "Manteiga 200 g", "skus": ["14208"], "busca": "manteiga 200g", "incluir": "^manteiga.*200 ?g", "excluir": "", "estocavel": false },
+    { "nome": "Muçarela", "skus": ["274350"], "busca": "queijo mussarela", "incluir": "mussarela", "excluir": "pizza|b[uú]fala|vegetal|bolinha|palito|light|ligth", "estocavel": false },
+    { "nome": "Pão de forma", "skus": ["17580"], "busca": "pao de forma", "incluir": "^p[aã]o de forma", "excluir": "integral|sem gl|castanha", "estocavel": false },
+    { "nome": "Detergente Ypê 500 ml", "skus": ["7916"], "busca": "detergente ype 500ml", "incluir": "detergente.*yp[eê].*500", "excluir": "", "estocavel": true },
+    { "nome": "Água sanitária 5 L", "skus": ["201538"], "busca": "agua sanitaria", "incluir": "^[aá]gua sanit[aá]ria", "excluir": "", "estocavel": true },
+    { "nome": "Esponja Scotch-Brite", "skus": ["259441"], "busca": "esponja scotch brite", "incluir": "esponja.*scotch.?brite", "excluir": "banho|metal|grill|n[aã]o risca", "estocavel": true },
+    { "nome": "Papel higiênico folha dupla", "skus": ["178598", "25148"], "busca": "papel higienico folha dupla", "incluir": "papel higi[eê]nico.*(neve|mili|personal)", "excluir": "tripla|qu[aá]drupla|simples", "estocavel": true }
+  ]
+}
