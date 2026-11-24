@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-24T04:10:33-03:00",
+  "atualizadoEm": "2026-11-24T04:44:23-03:00",
   "itens": [
     {
       "nome": "Leite Elege UHT Semi Desnatado Sem Lactose 1L",
@@ -156,20 +156,6 @@
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/378162/7891040281336.jpg?v=638434288041630000",
       "condicao": "",
       "dica": "Não estraga: vale levar até 3."
-    },
-    {
-      "nome": "Pão De Forma Pullman 480G",
-      "item": "Pão de forma",
-      "sku": "lisboa:128341",
-      "loja": "Mercado Lisboa",
-      "link": "https://www.lisboasupermercado.com.br/pao-de-forma-pullman-480g-128341",
-      "preco": 7.99,
-      "precoDe": 9.98,
-      "desconto": 20,
-      "motivo": "lista",
-      "imagem": "https://www.lisboasupermercado.com.br/product_picture.php?p=7896002360326",
-      "condicao": "",
-      "dica": ""
     },
     {
       "nome": "Pão De Forma Pullman 480G",

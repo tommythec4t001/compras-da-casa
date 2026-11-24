@@ -5,18 +5,20 @@
     "valor": 219.84,
     "estimado": 219.84,
     "economia": 20.56,
-    "produtos": 16
+    "produtos": 16,
+    "planilha": "Lançamentos 11/2026"
   },
   {
     "id": "teste-planilha-1",
     "teste": true,
     "pagaEm": "2026-11-24T07:45:00Z",
-    "valor": 1.0,
-    "estimado": 1.0,
+    "valor": 1,
+    "estimado": 1,
     "economia": 0,
     "produtos": 0,
     "lojas": [
       "Super Muffato"
-    ]
+    ],
+    "planilha": "Lançamentos 11/2026"
   }
 ]
