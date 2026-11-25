@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-24T04:44:23-03:00",
+  "atualizadoEm": "2026-11-25T01:06:04-03:00",
   "itens": [
     {
       "nome": "Leite Elege UHT Semi Desnatado Sem Lactose 1L",
@@ -23,6 +23,18 @@
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/341978/7896256601824_99_1_1200_72_RGB.jpg?v=638082604873330000",
       "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 4,34 cada)",
+      "dica": ""
+    },
+    {
+      "nome": "Leite Trevizan Pasteorizado Tipo A Semidesnatado Sem Lactose 1l",
+      "item": "Leite zero lactose",
+      "sku": "266128",
+      "preco": 9.38,
+      "precoDe": 13.4,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/437564/7898962937075.jpg?v=639189348567270000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 9,38 cada)",
       "dica": ""
     },
     {
@@ -184,18 +196,6 @@
       "dica": ""
     },
     {
-      "nome": "Pão de Forma Original Pullman Artesano Pacote 500g",
-      "item": "Pão de forma",
-      "sku": "225044",
-      "preco": 11.39,
-      "precoDe": 13.4,
-      "desconto": 15,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/386304/7896002302197_1.jpg?v=638519989770400000",
-      "condicao": "",
-      "dica": ""
-    },
-    {
       "nome": "Feijão Delizza Carioca 1Kg",
       "item": "Feijão carioca",
       "sku": "315902",
@@ -206,18 +206,6 @@
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/435508/7896278102392.jpg?v=639172925133730000",
       "condicao": "Promoção na compra de 2 ou mais",
       "dica": "Não estraga: vale levar até 3."
-    },
-    {
-      "nome": "Leite Frimesa Semidesnatado Zero Lactose 1L",
-      "item": "Leite zero lactose",
-      "sku": "91803",
-      "preco": 8.2,
-      "precoDe": null,
-      "desconto": null,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/420099/7896275960926.jpg?v=638972700213900000",
-      "condicao": "Promoção na compra de 5 ou mais",
-      "dica": ""
     }
   ]
 }
