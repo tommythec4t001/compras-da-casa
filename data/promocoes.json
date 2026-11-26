@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-25T01:06:04-03:00",
+  "atualizadoEm": "2026-11-26T05:02:22-03:00",
   "itens": [
     {
       "nome": "Leite Elege UHT Semi Desnatado Sem Lactose 1L",
@@ -29,12 +29,12 @@
       "nome": "Leite Trevizan Pasteorizado Tipo A Semidesnatado Sem Lactose 1l",
       "item": "Leite zero lactose",
       "sku": "266128",
-      "preco": 9.38,
-      "precoDe": 13.4,
+      "preco": 9.66,
+      "precoDe": 13.8,
       "desconto": 30,
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/437564/7898962937075.jpg?v=639189348567270000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 9,38 cada)",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 9,66 cada)",
       "dica": ""
     },
     {
@@ -122,6 +122,42 @@
       "dica": "Não estraga: vale levar até 3."
     },
     {
+      "nome": "Papel Higiênico Folha Dupla Neutro Neve Toque da Seda 30m Pacote 4 Unidades",
+      "item": "Papel higiênico",
+      "sku": "25148",
+      "preco": 7.35,
+      "precoDe": 9.8,
+      "desconto": 25,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/259400/477c67eed3771d1d86934dd853e0060d_papel-higienico-neve-toque-de-seda-4-rolos_lett_1.jpg?v=637133343419830000",
+      "condicao": "",
+      "dica": "Não estraga: vale levar até 3."
+    },
+    {
+      "nome": "Papel Higiênico Mili Folha Dupla Pacote com 16 Rolos",
+      "item": "Papel higiênico",
+      "sku": "178598",
+      "preco": 20.1,
+      "precoDe": 26.8,
+      "desconto": 25,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/355928/7896104995136.png?v=638195104460370000",
+      "condicao": "",
+      "dica": "Não estraga: vale levar até 3."
+    },
+    {
+      "nome": "Papel Higiênico Folha Dupla Neutro Neve Toque da Seda 30m Leve 16 Pague 15 Unidades",
+      "item": "Papel higiênico",
+      "sku": "162311",
+      "preco": 15.38,
+      "precoDe": 20.5,
+      "desconto": 25,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/395393/7891172432026_1.png?v=638654856831870000",
+      "condicao": "",
+      "dica": "Não estraga: vale levar até 3."
+    },
+    {
       "nome": "Sal Marinho Fino Integral BR Spices Salt Selection 1kg",
       "item": "Sal marinho",
       "sku": "306890",
@@ -192,6 +228,18 @@
       "desconto": 15,
       "motivo": "lista",
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/397132/7896002360326_1.jpg?v=638666775064500000",
+      "condicao": "",
+      "dica": ""
+    },
+    {
+      "nome": "Pão de Forma Original Pullman Artesano Pacote 500g",
+      "item": "Pão de forma",
+      "sku": "225044",
+      "preco": 11.39,
+      "precoDe": 13.4,
+      "desconto": 15,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/386304/7896002302197_1.jpg?v=638519989770400000",
       "condicao": "",
       "dica": ""
     },
