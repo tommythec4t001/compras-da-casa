@@ -1,5 +1,5 @@
 {
-  "atualizadoEm": "2026-11-26T05:02:22-03:00",
+  "atualizadoEm": "2026-11-27T05:07:06-03:00",
   "itens": [
     {
       "nome": "Leite Elege UHT Semi Desnatado Sem Lactose 1L",
@@ -74,6 +74,18 @@
       "dica": ""
     },
     {
+      "nome": "Queijo Mussarela Président Fatiado 300g",
+      "item": "Muçarela",
+      "sku": "273914",
+      "preco": 13.65,
+      "precoDe": 19.5,
+      "desconto": 30,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/300679/7891097103841.jpg?v=637723209482970000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 13,65 cada)",
+      "dica": ""
+    },
+    {
       "nome": "Queijo Mussarela Président Fatiado 150g",
       "item": "Muçarela",
       "sku": "211541",
@@ -86,27 +98,15 @@
       "dica": ""
     },
     {
-      "nome": "Queijo Tirol Mussarela Fatiado Zero Lactose 150g",
+      "nome": "Queijo Président Mussarela Fatiado kg",
       "item": "Muçarela",
-      "sku": "213486",
-      "preco": 8.19,
-      "precoDe": 11.7,
+      "sku": "211696",
+      "preco": 39.62,
+      "precoDe": 56.6,
       "desconto": 30,
       "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/243647/7896256604450.jpg?v=636754506676130000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 8,19 cada)",
-      "dica": ""
-    },
-    {
-      "nome": "Queijo Verde Campo Mussarela Lacfree 150g",
-      "item": "Muçarela",
-      "sku": "254802",
-      "preco": 10.78,
-      "precoDe": 15.4,
-      "desconto": 30,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/428347/7898205924909.png?v=639088586563600000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 10,78 cada)",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/316734/95273--1-.jpg?v=637903038504830000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 39,62 cada)",
       "dica": ""
     },
     {
@@ -204,20 +204,6 @@
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/378162/7891040281336.jpg?v=638434288041630000",
       "condicao": "",
       "dica": "Não estraga: vale levar até 3."
-    },
-    {
-      "nome": "Pão De Forma Pullman 480G",
-      "item": "Pão de forma",
-      "sku": "lisboa:128341",
-      "loja": "Mercado Lisboa",
-      "link": "https://www.lisboasupermercado.com.br/pao-de-forma-pullman-480g-128341",
-      "preco": 7.99,
-      "precoDe": 9.98,
-      "desconto": 20,
-      "motivo": "lista",
-      "imagem": "https://www.lisboasupermercado.com.br/product_picture.php?p=7896002360326",
-      "condicao": "",
-      "dica": ""
     },
     {
       "nome": "Pão de Forma Tradicional Pullman Pacote 480g",
