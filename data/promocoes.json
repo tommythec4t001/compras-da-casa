@@ -1,30 +1,6 @@
 {
-  "atualizadoEm": "2026-11-27T05:07:06-03:00",
+  "atualizadoEm": "2026-11-28T04:33:25-03:00",
   "itens": [
-    {
-      "nome": "Leite Elege UHT Semi Desnatado Sem Lactose 1L",
-      "item": "Leite zero lactose",
-      "sku": "313360",
-      "preco": 3.57,
-      "precoDe": 5.1,
-      "desconto": 30,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/432992/7891097106958.jpg?v=639142767314600000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 3,57 cada)",
-      "dica": ""
-    },
-    {
-      "nome": "Leite UHT Tirol Semidesnatado Zero Lactose 1L",
-      "item": "Leite zero lactose",
-      "sku": "157505",
-      "preco": 4.34,
-      "precoDe": 6.2,
-      "desconto": 30,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/341978/7896256601824_99_1_1200_72_RGB.jpg?v=638082604873330000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 4,34 cada)",
-      "dica": ""
-    },
     {
       "nome": "Leite Trevizan Pasteorizado Tipo A Semidesnatado Sem Lactose 1l",
       "item": "Leite zero lactose",
@@ -50,63 +26,15 @@
       "dica": ""
     },
     {
-      "nome": "Manteiga Président com Sal 200g",
-      "item": "Manteiga",
-      "sku": "254862",
-      "preco": 9.24,
-      "precoDe": 13.2,
-      "desconto": 30,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/337699/7891097001338_10_1_1200_72_RGB.jpg?v=638062092228700000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 9,24 cada)",
-      "dica": ""
-    },
-    {
-      "nome": "Manteiga Batavo sem Sal 200g",
-      "item": "Manteiga",
-      "sku": "14479",
-      "preco": 7.21,
-      "precoDe": 10.3,
-      "desconto": 30,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/337724/7891097015519_1_1_1200_72_RGB.jpg?v=638062106427930000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 7,21 cada)",
-      "dica": ""
-    },
-    {
-      "nome": "Queijo Mussarela Président Fatiado 300g",
+      "nome": "Queijo Verde Campo Mussarela Lacfree 150g",
       "item": "Muçarela",
-      "sku": "273914",
-      "preco": 13.65,
-      "precoDe": 19.5,
+      "sku": "254802",
+      "preco": 10.78,
+      "precoDe": 15.4,
       "desconto": 30,
       "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/300679/7891097103841.jpg?v=637723209482970000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 13,65 cada)",
-      "dica": ""
-    },
-    {
-      "nome": "Queijo Mussarela Président Fatiado 150g",
-      "item": "Muçarela",
-      "sku": "211541",
-      "preco": 6.51,
-      "precoDe": 9.3,
-      "desconto": 30,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/317852/7898955617526_.jpg?v=637913476632070000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 6,51 cada)",
-      "dica": ""
-    },
-    {
-      "nome": "Queijo Président Mussarela Fatiado kg",
-      "item": "Muçarela",
-      "sku": "211696",
-      "preco": 39.62,
-      "precoDe": 56.6,
-      "desconto": 30,
-      "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/316734/95273--1-.jpg?v=637903038504830000",
-      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 39,62 cada)",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/428347/7898205924909.png?v=639088586563600000",
+      "condicao": "Leve 2: 1 sai com 60% de desconto (média de R$ 10,78 cada)",
       "dica": ""
     },
     {
@@ -218,14 +146,44 @@
       "dica": ""
     },
     {
-      "nome": "Pão de Forma Original Pullman Artesano Pacote 500g",
-      "item": "Pão de forma",
-      "sku": "225044",
-      "preco": 11.39,
-      "precoDe": 13.4,
-      "desconto": 15,
+      "nome": "Arroz Folha Verde Branco Extra 5Kg",
+      "item": "Arroz",
+      "sku": "lisboa:527963",
+      "loja": "Mercado Lisboa",
+      "link": "https://www.lisboasupermercado.com.br/arroz-folha-verde-branco-extra-5kg-527963",
+      "preco": 23.9,
+      "precoDe": 26.9,
+      "desconto": 11,
       "motivo": "lista",
-      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/386304/7896002302197_1.jpg?v=638519989770400000",
+      "imagem": "https://www.lisboasupermercado.com.br/product_picture.php?p=7898289370012",
+      "condicao": "",
+      "dica": "Não estraga: vale levar até 3."
+    },
+    {
+      "nome": "Arroz Ales 5Kg",
+      "item": "Arroz",
+      "sku": "lisboa:120405",
+      "loja": "Mercado Lisboa",
+      "link": "https://www.lisboasupermercado.com.br/arroz-ales-5kg-120405",
+      "preco": 19.98,
+      "precoDe": 21.9,
+      "desconto": 9,
+      "motivo": "lista",
+      "imagem": "https://www.lisboasupermercado.com.br/product_picture.php?p=7896954200060",
+      "condicao": "",
+      "dica": "Não estraga: vale levar até 3."
+    },
+    {
+      "nome": "Pão De Forma Original Artesano Pullman 500G",
+      "item": "Pão de forma",
+      "sku": "lisboa:462110",
+      "loja": "Mercado Lisboa",
+      "link": "https://www.lisboasupermercado.com.br/pao-de-forma-original-artesano-pullman-500g-462110",
+      "preco": 12.9,
+      "precoDe": 13.9,
+      "desconto": 7,
+      "motivo": "lista",
+      "imagem": "https://www.lisboasupermercado.com.br/product_picture.php?p=7896002302197",
       "condicao": "",
       "dica": ""
     },
@@ -240,6 +198,18 @@
       "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/435508/7896278102392.jpg?v=639172925133730000",
       "condicao": "Promoção na compra de 2 ou mais",
       "dica": "Não estraga: vale levar até 3."
+    },
+    {
+      "nome": "Leite Frimesa Semidesnatado Zero Lactose 1L",
+      "item": "Leite zero lactose",
+      "sku": "91803",
+      "preco": 8.2,
+      "precoDe": null,
+      "desconto": null,
+      "motivo": "lista",
+      "imagem": "https://muffatosupermercados.vteximg.com.br/arquivos/ids/420099/7896275960926.jpg?v=638972700213900000",
+      "condicao": "Promoção na compra de 5 ou mais",
+      "dica": ""
     }
   ]
 }
